@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Илья Ганжа](https://up.htmlacademy.ru/javascript/18/user/177675).
-* Наставник: `Неизвестно`.
+* Наставник: `Семён Якушев`.
 
 ---
 
