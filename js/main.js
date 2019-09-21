@@ -1,14 +1,32 @@
 'use strict';
 var ADVERTS_AMOUNT = 8;
-var adverts = [];
+
 var NUMBER_TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var FACILITIES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var CHECK_IN_TIMES = ['12:00', '13:00', '14:00'];
 var CHECK_OUT_TIMES = ['12:00', '13:00', '14:00'];
+var MAX_NUMBER_PRICE = 1000000;
+var MIN_NUMBER_PRICE = 0;
+var MAX_NUMBER_AMOUNT = 10;
+var MIN_NUMBER_AMOUNT = 0;
+var MAX_GUESTS_AMOUNT = 10;
+var MIN_GUESTS_AMOUNT = 0;
+var PIN_WIDTH = 50;
+var PIN_HEIGHT = 70;
+var MIN_Y_COORD = 130;
+var MAX_Y_COORD = 630;
+
 var PHOTOS_URLS_ARRAY = [
   'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
+];
+var descriptionsArray = [
+  'Очень просторное и светлое жилье',
+  'Уютное жилье в центре города',
+  'Лучший вариант для проживания в районе с богатой инфраструктурой',
+  'Магазины и все достопримечательности города прямо под рукой',
+  'Лучшего варианта просто не найти - удобный вариант как для одинокой девушки или парня, так и для большой семьи'
 ];
 
 var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
@@ -18,8 +36,18 @@ var fragment = document.createDocumentFragment();
 
 map.classList.remove('map--faded');
 
-var createAdvertsArray = function () {
-  for (var i = 0; i < ADVERTS_AMOUNT; i++) {
+var getRandomNumber = function (min, max, isRound) { // может параметр isRound получше назвать можно
+  if (isRound) {
+    var randomNumber = min + Math.round(Math.random() * (max - min));
+  } else {
+    randomNumber = min + Math.floor(Math.random() * (max - min));
+  }
+  return randomNumber;
+};
+
+var createAdvertsArray = function (amount) {
+  var adverts = [];
+  for (var i = 0; i < amount; i++) {
     adverts[i] = {
       'autor': {
         'avatar': 'img/avatars/user0' + (i + 1) + '.png',
@@ -27,34 +55,34 @@ var createAdvertsArray = function () {
 
       'offer': {
         'title': 'Объявление ' + (i + 1),
-        'address': '"' + location.x + ', ' + location.y + '"', // строка, адрес предложения. Для простоты пусть пока представляет собой запись вида "{{location.x}}, {{location.y}}", например, "600, 350"
-        'price': Math.round(Math.random() * 1000000), // число, стоимость
-        'type': NUMBER_TYPES[Math.floor(Math.random() * NUMBER_TYPES.length)], // строка с одним из четырёх фиксированных значений: palace, flat, house или bungalo
-        'rooms': Math.round(Math.random() * 10), // число, количество комнат
-        'guests': Math.round(Math.random() * 1000000), // число, количество гостей, которое можно разместить
-        'checkin': CHECK_IN_TIMES[Math.floor(Math.random() * CHECK_IN_TIMES.length)], // строка с одним из трёх фиксированных значений: 12:00, 13:00 или 14:00,
-        'checkout': CHECK_OUT_TIMES[Math.floor(Math.random() * CHECK_OUT_TIMES.length)], // строка с одним из трёх фиксированных значений: 12:00, 13:00 или 14:00
+        'address': '"' + location.x + ', ' + location.y + '"',
+        'price': getRandomNumber(MIN_NUMBER_PRICE, MAX_NUMBER_PRICE, true),
+        'type': NUMBER_TYPES[getRandomNumber(0, NUMBER_TYPES.length, false)],
+        'rooms': getRandomNumber(MIN_NUMBER_AMOUNT, MAX_NUMBER_AMOUNT, true),
+        'guests': getRandomNumber(MIN_GUESTS_AMOUNT, MAX_GUESTS_AMOUNT, true),
+        'checkin': CHECK_IN_TIMES[getRandomNumber(0, CHECK_IN_TIMES.length, false)],
+        'checkout': CHECK_OUT_TIMES[getRandomNumber(0, CHECK_OUT_TIMES.length, false)],
         'features': function () {
           var facilities = [];
-          for (var j = 0; j < FACILITIES.length * Math.floor(Math.random()); j++) {
-            facilities[j] = FACILITIES[Math.floor(Math.random() * FACILITIES.length)];
+          for (var j = 0; j < getRandomNumber(0, FACILITIES.length, false); j++) {
+            facilities[j] = FACILITIES[getRandomNumber(0, FACILITIES.length, false)];
           }
           return facilities;
-        }, // массив строк случайной длины из ниже предложенных: "wifi", "dishwasher", "parking", "washer", "elevator", "conditioner",
-        'description': 'Описание объявления ' + (i + 1), // строка с описанием,
+        },
+        'description': descriptionsArray[getRandomNumber(0, descriptionsArray.length, false)],
 
         'photos': function () {
           var photosUrls = [];
-          for (var j = 0; j < PHOTOS_URLS_ARRAY.length * Math.floor(Math.random()); j++) {
-            photosUrls[j] = PHOTOS_URLS_ARRAY[Math.floor(Math.random() * PHOTOS_URLS_ARRAY.length)];
+          for (var j = 0; j < getRandomNumber(0, PHOTOS_URLS_ARRAY.length, false); j++) {
+            photosUrls[j] = PHOTOS_URLS_ARRAY[getRandomNumber(0, PHOTOS_URLS_ARRAY.length, false)];
           }
           return photosUrls;
-        }, // массив строк случайной длины, содержащий адреса фотографий "http://o0.github.io/assets/images/tokyo/hotel1.jpg", "http://o0.github.io/assets/images/tokyo/hotel2.jpg", "http://o0.github.io/assets/images/tokyo/hotel3.jpg"
+        },
       },
 
       'location': {
-        'x': (Math.floor(Math.random() * map.getBoundingClientRect().width) - 25), // случайное число, координата x метки на карте. Значение ограничено размерами блока, в котором перетаскивается метка.
-        'y': (130 + Math.round(Math.random() * 500) - 70), // случайное число, координата y метки на карте от 130 до 630.
+        'x': (getRandomNumber(0, map.getBoundingClientRect().width, false) - PIN_WIDTH / 2),
+        'y': (getRandomNumber(MIN_Y_COORD, MAX_Y_COORD, true) - PIN_HEIGHT / 2),
       }
     };
   }
@@ -64,18 +92,17 @@ var createAdvertsArray = function () {
 var createPin = function (advert) {
 
   var newPin = pinTemplate.cloneNode(true);
-  newPin.querySelector('img').style.src = advert.autor.avatar;
+  newPin.querySelector('img').src = advert.autor.avatar;
   newPin.style.left = advert.location.x + 'px';
   newPin.style.top = advert.location.y + 'px';
   return newPin;
 };
 
 var renderPins = function () {
-  createAdvertsArray();
+  var adverts = createAdvertsArray(ADVERTS_AMOUNT);
   for (var i = 0; i < ADVERTS_AMOUNT; i++) {
     fragment.appendChild(createPin(adverts[i]));
   }
   mapPins.appendChild(fragment);
 };
-
 renderPins();
