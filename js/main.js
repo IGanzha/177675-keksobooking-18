@@ -36,13 +36,21 @@ var fragment = document.createDocumentFragment();
 
 map.classList.remove('map--faded');
 
-var getRandomNumber = function (min, max, isRound) { // может параметр isRound получше назвать можно
-  if (isRound) {
+var getRandomNumber = function (min, max, isInteger) { // может параметр isRound получше назвать можно
+  if (isInteger) {
     var randomNumber = min + Math.round(Math.random() * (max - min));
   } else {
     randomNumber = min + Math.floor(Math.random() * (max - min));
   }
   return randomNumber;
+};
+
+var getRandomArray = function (array) {
+  var randomArray = [];
+  for (var i = 0; i < getRandomNumber(0, array.length, false); i++) {
+    randomArray[i] = array[getRandomNumber(0, array.length, false)];
+  }
+  return randomArray;
 };
 
 var createAdvertsArray = function (amount) {
@@ -62,22 +70,9 @@ var createAdvertsArray = function (amount) {
         'guests': getRandomNumber(MIN_GUESTS_AMOUNT, MAX_GUESTS_AMOUNT, true),
         'checkin': CHECK_IN_TIMES[getRandomNumber(0, CHECK_IN_TIMES.length, false)],
         'checkout': CHECK_OUT_TIMES[getRandomNumber(0, CHECK_OUT_TIMES.length, false)],
-        'features': function () {
-          var facilities = [];
-          for (var j = 0; j < getRandomNumber(0, FACILITIES.length, false); j++) {
-            facilities[j] = FACILITIES[getRandomNumber(0, FACILITIES.length, false)];
-          }
-          return facilities;
-        },
+        'features': getRandomArray(FACILITIES),
         'description': descriptionsArray[getRandomNumber(0, descriptionsArray.length, false)],
-
-        'photos': function () {
-          var photosUrls = [];
-          for (var j = 0; j < getRandomNumber(0, PHOTOS_URLS_ARRAY.length, false); j++) {
-            photosUrls[j] = PHOTOS_URLS_ARRAY[getRandomNumber(0, PHOTOS_URLS_ARRAY.length, false)];
-          }
-          return photosUrls;
-        },
+        'photos': getRandomArray(PHOTOS_URLS_ARRAY),
       },
 
       'location': {
