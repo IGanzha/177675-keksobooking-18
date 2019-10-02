@@ -113,22 +113,24 @@ renderPins();
 var renderCard = function () {
   var newCard = cardTemplate.cloneNode(true);
   var array = createAdvertsArray(ADVERTS_AMOUNT);
-  newCard.querySelector('.popup_title').textContent = array[0].offer.title;
-  newCard.querySelector('.popup__text--address').textContent = array[0].offer.adress; // не отображает
+  newCard.querySelector('.popup__title').textContent = array[0].offer.title;
+  newCard.querySelector('.popup__text--address').textContent = array[0].offer.adress;
+
   newCard.querySelector('.popup__text--price').textContent = array[0].offer.price + '₽/ночь';
   newCard.querySelector('.popup__type').textContent = RUSSIAN_TYPES[array[0].offer.type];
-  newCard.querySelector('.popup__text--capacity').textContent = array[0].offer.rooms + ((array[0].offer.rooms > 4) ? ' комнат для ' : (array[0].offer.rooms > 1) ? ' комнаты для ' : ' комната для ') + array[0].offer.guests + ((array[0].offer.guests > 1) ? ' гостей' : ' гостя');
+  newCard.querySelector('.popup__text--capacity').textContent = array[0].offer.rooms + ' комнат(-а/-ы) для ' + array[0].offer.guests + ' гостей(-я)';
   newCard.querySelector('.popup__text--time').textContent = 'Заезд после ' + array[0].offer.checkin + ', выезд до ' + array[0].offer.checkout + '.';
-  newCard.querySelector('.popup_features').textContent = array[0].offer.features;
-  newCard.querySelector('.popup_description').textContent = array[0].offer.description;
+  newCard.querySelector('.popup__features').textContent = array[0].offer.features;
+  newCard.querySelector('.popup__description').textContent = array[0].offer.description;
 
   for (var i = 0; i < array[0].offer.photos.length; i++) {
-    var photoTemplate = document.querySelector('#card').content.querySelector('.popup_photos').querySelector('img');
+    var photoTemplate = document.querySelector('#card').content.querySelector('.popup__photos').querySelector('img');
     var newPhoto = photoTemplate.cloneNode(true);
     newPhoto.src = array[0].offer.photos[i];
-    newCard.querySelector('.popup_photos').appendChild(newPhoto);
+    newCard.querySelector('.popup__photos').appendChild(newPhoto);
   }
-  newCard.querySelector('.popup_avatar').src = array[0].autor.avatar;
+  newCard.querySelector('.popup__avatar').src = array[0].autor.avatar;
+  return newCard;
 };
 
 map.insertBefore(renderCard(), filterContainer);
