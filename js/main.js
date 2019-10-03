@@ -1,20 +1,31 @@
 'use strict';
+var map = document.querySelector('.map');
 var ADVERTS_AMOUNT = 8;
 
 var NUMBER_TYPES = ['palace', 'flat', 'house', 'bungalo'];
+var MIN_INDEX_TYPES = 0;
+var RUSSIAN_TYPES = {
+  'palace': 'Дворец',
+  'flat': 'Квартира',
+  'house': 'Дом',
+  'bungalo': 'Бунгало'
+};
 var FACILITIES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var CHECK_IN_TIMES = ['12:00', '13:00', '14:00'];
 var CHECK_OUT_TIMES = ['12:00', '13:00', '14:00'];
-var MAX_NUMBER_PRICE = 1000000;
+var MIN_INDEX_TIMES = 0;
+var MAX_NUMBER_PRICE = 100000;
 var MIN_NUMBER_PRICE = 0;
 var MAX_NUMBER_AMOUNT = 10;
-var MIN_NUMBER_AMOUNT = 0;
+var MIN_NUMBER_AMOUNT = 1;
 var MAX_GUESTS_AMOUNT = 10;
-var MIN_GUESTS_AMOUNT = 0;
+var MIN_GUESTS_AMOUNT = 1;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
 var MIN_Y_COORD = 130;
 var MAX_Y_COORD = 630;
+var MIN_X_COORD = PIN_WIDTH / 2;
+var MAX_X_COORD = map.getBoundingClientRect().width - PIN_WIDTH / 2;
 
 var PHOTOS_URLS_ARRAY = [
   'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
@@ -28,11 +39,13 @@ var descriptionsArray = [
   'Магазины и все достопримечательности города прямо под рукой',
   'Лучшего варианта просто не найти - удобный вариант как для одинокой девушки или парня, так и для большой семьи'
 ];
+var MIN_INDEX_DESCRIPTION = 0;
 
 var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 var mapPins = document.querySelector('.map__pins');
-var map = document.querySelector('.map');
 var fragment = document.createDocumentFragment();
+var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+var filterContainer = document.querySelector('.map__filters-container');
 
 map.classList.remove('map--faded');
 
@@ -47,8 +60,8 @@ var getRandomNumber = function (min, max, isInteger) { // может парам�
 
 var getRandomArray = function (array) {
   var randomArray = [];
-  for (var i = 0; i < getRandomNumber(0, array.length, false); i++) {
-    randomArray[i] = array[getRandomNumber(0, array.length, false)];
+  for (var i = 0; i < getRandomNumber(1, array.length, false); i++) {
+    randomArray[i] = array[getRandomNumber(1, array.length, false)];
   }
   return randomArray;
 };
@@ -56,6 +69,10 @@ var getRandomArray = function (array) {
 var createAdvertsArray = function (amount) {
   var adverts = [];
   for (var i = 0; i < amount; i++) {
+    var location = {
+      'x': (getRandomNumber(MIN_X_COORD, MAX_X_COORD, false) - PIN_WIDTH / 2),
+      'y': (getRandomNumber(MIN_Y_COORD, MAX_Y_COORD, true) - PIN_HEIGHT / 2),
+    };
     adverts[i] = {
       'autor': {
         'avatar': 'img/avatars/user0' + (i + 1) + '.png',
@@ -65,20 +82,17 @@ var createAdvertsArray = function (amount) {
         'title': 'Объявление ' + (i + 1),
         'address': '"' + location.x + ', ' + location.y + '"',
         'price': getRandomNumber(MIN_NUMBER_PRICE, MAX_NUMBER_PRICE, true),
-        'type': NUMBER_TYPES[getRandomNumber(0, NUMBER_TYPES.length, false)],
+        'type': NUMBER_TYPES[getRandomNumber(MIN_INDEX_TYPES, NUMBER_TYPES.length, false)],
         'rooms': getRandomNumber(MIN_NUMBER_AMOUNT, MAX_NUMBER_AMOUNT, true),
         'guests': getRandomNumber(MIN_GUESTS_AMOUNT, MAX_GUESTS_AMOUNT, true),
-        'checkin': CHECK_IN_TIMES[getRandomNumber(0, CHECK_IN_TIMES.length, false)],
-        'checkout': CHECK_OUT_TIMES[getRandomNumber(0, CHECK_OUT_TIMES.length, false)],
+        'checkin': CHECK_IN_TIMES[getRandomNumber(MIN_INDEX_TIMES, CHECK_IN_TIMES.length, false)],
+        'checkout': CHECK_OUT_TIMES[getRandomNumber(MIN_INDEX_TIMES, CHECK_OUT_TIMES.length, false)],
         'features': getRandomArray(FACILITIES),
-        'description': descriptionsArray[getRandomNumber(0, descriptionsArray.length, false)],
+        'description': descriptionsArray[getRandomNumber(MIN_INDEX_DESCRIPTION, descriptionsArray.length, false)],
         'photos': getRandomArray(PHOTOS_URLS_ARRAY),
       },
 
-      'location': {
-        'x': (getRandomNumber(0, map.getBoundingClientRect().width, false) - PIN_WIDTH / 2),
-        'y': (getRandomNumber(MIN_Y_COORD, MAX_Y_COORD, true) - PIN_HEIGHT / 2),
-      }
+      'location': location
     };
   }
   return adverts;
@@ -99,5 +113,33 @@ var renderPins = function () {
     fragment.appendChild(createPin(adverts[i]));
   }
   mapPins.appendChild(fragment);
+
 };
+
 renderPins();
+
+var renderCard = function () {
+  var newCard = cardTemplate.cloneNode(true);
+  var array = createAdvertsArray(ADVERTS_AMOUNT);
+  newCard.querySelector('.popup__title').textContent = array[0].offer.title;
+  newCard.querySelector('.popup__text--address').textContent = array[0].offer.adress;
+
+  newCard.querySelector('.popup__text--price').textContent = array[0].offer.price + '₽/ночь';
+  newCard.querySelector('.popup__type').textContent = RUSSIAN_TYPES[array[0].offer.type];
+  newCard.querySelector('.popup__text--capacity').textContent = array[0].offer.rooms + ' комнат(-а/-ы) для ' + array[0].offer.guests + ' гостей(-я)';
+  newCard.querySelector('.popup__text--time').textContent = 'Заезд после ' + array[0].offer.checkin + ', выезд до ' + array[0].offer.checkout + '.';
+  newCard.querySelector('.popup__features').textContent = array[0].offer.features;
+  newCard.querySelector('.popup__description').textContent = array[0].offer.description;
+
+  newCard.querySelector('.popup__photos').innerHTML = '';
+  for (var i = 0; i < array[0].offer.photos.length; i++) {
+    var photoTemplate = document.querySelector('#card').content.querySelector('.popup__photos').querySelector('img');
+    var newPhoto = photoTemplate.cloneNode(true);
+    newPhoto.src = array[0].offer.photos[i];
+    newCard.querySelector('.popup__photos').appendChild(newPhoto);
+  }
+  newCard.querySelector('.popup__avatar').src = array[0].autor.avatar;
+  return newCard;
+};
+
+map.insertBefore(renderCard(), filterContainer);
