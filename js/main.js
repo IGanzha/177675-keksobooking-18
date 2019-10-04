@@ -26,6 +26,13 @@ var MIN_Y_COORD = 130;
 var MAX_Y_COORD = 630;
 var MIN_X_COORD = PIN_WIDTH / 2;
 var MAX_X_COORD = map.getBoundingClientRect().width - PIN_WIDTH / 2;
+var ENTER_KEYCODE = 13;
+// var ESC_KEYCODE = 27; на будущее
+var START_MAIN_PIN_COORD_X = 570;
+var START_MAIN_PIN_COORD_Y = 375;
+var MAIN_PIN_HEIGHT = 65;
+var MAIN_PIN_WIDTH = 65;
+var PIN_ARROWHEAD_HEIGHT = 22;
 
 var PHOTOS_URLS_ARRAY = [
   'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
@@ -46,8 +53,11 @@ var mapPins = document.querySelector('.map__pins');
 var fragment = document.createDocumentFragment();
 var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 var filterContainer = document.querySelector('.map__filters-container');
+var mainPin = document.querySelector('.map__pin--main');
+var adForm = document.querySelector('.ad-form');
+var addressField = document.querySelector('#address');
 
-map.classList.remove('map--faded');
+// map.classList.remove('map--faded');
 
 var getRandomNumber = function (min, max, isInteger) { // может параметр isRound получше назвать можно
   if (isInteger) {
@@ -107,6 +117,8 @@ var createPin = function (advert) {
   return newPin;
 };
 
+// ------------------ Тревис ругается, что она нигде не используется. Но мы по заданию вызов функции убрали... как быть?
+
 var renderPins = function () {
   var adverts = createAdvertsArray(ADVERTS_AMOUNT);
   for (var i = 0; i < ADVERTS_AMOUNT; i++) {
@@ -116,7 +128,9 @@ var renderPins = function () {
 
 };
 
-renderPins();
+// renderPins();
+
+// ---------------------аналогично -  ругается Тревис
 
 var renderCard = function () {
   var newCard = cardTemplate.cloneNode(true);
@@ -142,4 +156,68 @@ var renderCard = function () {
   return newCard;
 };
 
-map.insertBefore(renderCard(), filterContainer);
+// map.insertBefore(renderCard(), filterContainer);
+
+// ----------  деактивирую все инпуты
+var formFieldsets = document.querySelectorAll('fieldset');
+for (var i = 0; i < formFieldsets.length; i++) {
+  formFieldsets[i].setAttribute('disabled', 'disabled');
+}
+
+// ----------   добавляю координаты в поле адрес в неактивном состоянии
+addressField.value = (START_MAIN_PIN_COORD_X + MAIN_PIN_WIDTH / 2) + ', ' + (START_MAIN_PIN_COORD_Y + MAIN_PIN_HEIGHT / 2);
+
+// ТЗ: "Форма с фильтрами .map__filters заблокирована так же, как и форма .ad-form;"
+// форма ad-form заблокирована с помощью класса ad-form--disabled, но для формы .map__filters подобного класса нет! Поэтому просто скрываю её через добавление класса hidden
+filterContainer.classList.add('hidden');
+
+// ------- активация карты по щелчку и нажатию Enter
+var activateMap = function () {
+  map.classList.remove('map--faded');
+  filterContainer.classList.remove('hidden');
+  adForm.classList.remove('ad-form--disabled');
+
+  // -----------меняю значение в поле адрес - определяю их по концу метки
+  addressField.value = (START_MAIN_PIN_COORD_X + MAIN_PIN_WIDTH / 2) + ', ' + (START_MAIN_PIN_COORD_Y + MAIN_PIN_HEIGHT + PIN_ARROWHEAD_HEIGHT);
+  // ---------- удаляю обработчики
+  mainPin.removeEventListener('mousedown', activateMap);
+  mainPin.removeEventListener('keydown', onPinPressEnter);
+};
+
+var onPinPressEnter = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    activateMap();
+  }
+};
+
+mainPin.addEventListener('mousedown', activateMap);
+mainPin.addEventListener('keydown', onPinPressEnter);
+
+// ----- добавляю обработчик события mousemove (мы потом будем двигать пин и этот обработчик нам подойдет?), в функцию добавляю изменение координаты в поле с адресом
+
+mainPin.addEventListener('mousemove', function (evt) {
+
+  // корректно брать координаты pageX и pageY? если я буду перетаскивать пин, эти координаты будут соответствовать его центру?
+  addressField.value = evt.pageX + ', ' + (evt.pageY + (MAIN_PIN_HEIGHT / 2) + PIN_ARROWHEAD_HEIGHT);
+});
+
+// ---------- ограничение ввода полей  -------
+
+var roomsSelect = document.querySelector('#housing-rooms');
+
+roomsSelect.addEventListener('change', function () {
+
+  var guestsSelectOptions = document.querySelector('#housing-guests').children;
+
+  for (i = 0; i < guestsSelectOptions.length; i++) {
+    // чтобы при последующей смене количества комнат не оставались проставленные атрибуты disabled, сначала очищаю их у всех элементов
+    guestsSelectOptions[i].removeAttribute('disabled');
+    if (guestsSelectOptions[i].value > roomsSelect.value) {
+      guestsSelectOptions[i].setAttribute('disabled', 'disabled');
+    }
+
+    if ((roomsSelect.value > 0) && (roomsSelect.value !== 'any') && (+guestsSelectOptions[i].value === 0)) {
+      guestsSelectOptions[i].setAttribute('disabled', 'disabled');
+    }
+  }
+});
