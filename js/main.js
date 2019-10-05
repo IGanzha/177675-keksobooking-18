@@ -16,8 +16,8 @@ var CHECK_OUT_TIMES = ['12:00', '13:00', '14:00'];
 var MIN_INDEX_TIMES = 0;
 var MAX_NUMBER_PRICE = 100000;
 var MIN_NUMBER_PRICE = 0;
-var MAX_NUMBER_AMOUNT = 10;
-var MIN_NUMBER_AMOUNT = 1;
+var MAX_NUMBERS_AMOUNT = 10;
+var MIN_NUMBERS_AMOUNT = 1;
 var MAX_GUESTS_AMOUNT = 10;
 var MIN_GUESTS_AMOUNT = 1;
 var PIN_WIDTH = 50;
@@ -33,6 +33,7 @@ var START_MAIN_PIN_COORD_Y = 375;
 var MAIN_PIN_HEIGHT = 65;
 var MAIN_PIN_WIDTH = 65;
 var PIN_ARROWHEAD_HEIGHT = 22;
+var MAX_ROOMS_AVAILABLE = 5;
 
 var PHOTOS_URLS_ARRAY = [
   'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
@@ -93,7 +94,7 @@ var createAdvertsArray = function (amount) {
         'address': '"' + location.x + ', ' + location.y + '"',
         'price': getRandomNumber(MIN_NUMBER_PRICE, MAX_NUMBER_PRICE, true),
         'type': NUMBER_TYPES[getRandomNumber(MIN_INDEX_TYPES, NUMBER_TYPES.length, false)],
-        'rooms': getRandomNumber(MIN_NUMBER_AMOUNT, MAX_NUMBER_AMOUNT, true),
+        'rooms': getRandomNumber(MIN_NUMBERS_AMOUNT, MAX_NUMBERS_AMOUNT, true),
         'guests': getRandomNumber(MIN_GUESTS_AMOUNT, MAX_GUESTS_AMOUNT, true),
         'checkin': CHECK_IN_TIMES[getRandomNumber(MIN_INDEX_TIMES, CHECK_IN_TIMES.length, false)],
         'checkout': CHECK_OUT_TIMES[getRandomNumber(MIN_INDEX_TIMES, CHECK_OUT_TIMES.length, false)],
@@ -158,24 +159,33 @@ var renderCard = function () {
 
 // map.insertBefore(renderCard(), filterContainer);
 
-// ----------  деактивирую все инпуты
+// ----------  деактивирую все инпуты в форме объявления
 var formFieldsets = document.querySelectorAll('fieldset');
 for (var i = 0; i < formFieldsets.length; i++) {
   formFieldsets[i].setAttribute('disabled', 'disabled');
 }
 
+// ----------  деактивирую все инпуты в фильтрах на карте
+var mapFilterInputs = document.querySelector('.map__filters').querySelectorAll('select');
+for (i = 0; i < mapFilterInputs.length; i++) {
+  mapFilterInputs[i].setAttribute('disabled', 'disabled');
+}
+
 // ----------   добавляю координаты в поле адрес в неактивном состоянии
 addressField.value = (START_MAIN_PIN_COORD_X + MAIN_PIN_WIDTH / 2) + ', ' + (START_MAIN_PIN_COORD_Y + MAIN_PIN_HEIGHT / 2);
 
-// ТЗ: "Форма с фильтрами .map__filters заблокирована так же, как и форма .ad-form;"
-// форма ad-form заблокирована с помощью класса ad-form--disabled, но для формы .map__filters подобного класса нет! Поэтому просто скрываю её через добавление класса hidden
-filterContainer.classList.add('hidden');
-
-// ------- активация карты по щелчку и нажатию Enter
 var activateMap = function () {
   map.classList.remove('map--faded');
   filterContainer.classList.remove('hidden');
   adForm.classList.remove('ad-form--disabled');
+
+  for (i = 0; i < formFieldsets.length; i++) {
+    formFieldsets[i].removeAttribute('disabled');
+  }
+
+  for (i = 0; i < mapFilterInputs.length; i++) {
+    mapFilterInputs[i].removeAttribute('disabled');
+  }
 
   // -----------меняю значение в поле адрес - определяю их по концу метки
   addressField.value = (START_MAIN_PIN_COORD_X + MAIN_PIN_WIDTH / 2) + ', ' + (START_MAIN_PIN_COORD_Y + MAIN_PIN_HEIGHT + PIN_ARROWHEAD_HEIGHT);
@@ -193,31 +203,64 @@ var onPinPressEnter = function (evt) {
 mainPin.addEventListener('mousedown', activateMap);
 mainPin.addEventListener('keydown', onPinPressEnter);
 
-// ----- добавляю обработчик события mousemove (мы потом будем двигать пин и этот обработчик нам подойдет?), в функцию добавляю изменение координаты в поле с адресом
-
 mainPin.addEventListener('mousemove', function (evt) {
-
-  // корректно брать координаты pageX и pageY? если я буду перетаскивать пин, эти координаты будут соответствовать его центру?
   addressField.value = evt.pageX + ', ' + (evt.pageY + (MAIN_PIN_HEIGHT / 2) + PIN_ARROWHEAD_HEIGHT);
 });
 
-// ---------- ограничение ввода полей  -------
 
-var roomsSelect = document.querySelector('#housing-rooms');
+// ---------- ОГРАНИЧЕНИЕ НА ВВОД ПОЛЕЙ  -------
 
-roomsSelect.addEventListener('change', function () {
+var roomNumber = document.querySelector('#room_number');
+var capacity = document.querySelector('#capacity');
 
-  var guestsSelectOptions = document.querySelector('#housing-guests').children;
+var validateRoomsAndGuestsSelects = function (roomsSelect, guestsSelect) {
 
-  for (i = 0; i < guestsSelectOptions.length; i++) {
-    // чтобы при последующей смене количества комнат не оставались проставленные атрибуты disabled, сначала очищаю их у всех элементов
-    guestsSelectOptions[i].removeAttribute('disabled');
-    if (guestsSelectOptions[i].value > roomsSelect.value) {
-      guestsSelectOptions[i].setAttribute('disabled', 'disabled');
+  var guestsAmountOptions = guestsSelect.children;
+  for (i = 0; i < guestsAmountOptions.length; i++) {
+    guestsAmountOptions[i].removeAttribute('disabled');
+
+    // ------- блокирую, если количество гостей больше, чем комнат
+    if (guestsAmountOptions[i].value > roomsSelect.value) {
+      guestsAmountOptions[i].setAttribute('disabled', 'disabled');
     }
 
-    if ((roomsSelect.value > 0) && (roomsSelect.value !== 'any') && (+guestsSelectOptions[i].value === 0)) {
-      guestsSelectOptions[i].setAttribute('disabled', 'disabled');
+    // ------- блокирую все варианты гостей, кроме "не для гостей", если очень много комнат - условно ввел MAX_ROOMS_AVAILABLE = 5 - сюда будет попадать "100 комнат".
+    if ((roomsSelect.value > MAX_ROOMS_AVAILABLE) && (guestsAmountOptions[i].value > 0)) {
+      guestsAmountOptions[i].setAttribute('disabled', 'disabled');
+    }
+
+    // блокирую вариант "не для гостей", если количество комнат не превышает допустимое MAX_ROOMS_AVAILABLE
+    if ((roomsSelect.value < MAX_ROOMS_AVAILABLE) && (guestsAmountOptions[i].value < 1)) {
+      guestsAmountOptions[i].setAttribute('disabled', 'disabled');
     }
   }
+
+  // --------- ОБРАТНАЯ БЛОКИРОВКА - ------
+  var roomsAmountOptions = roomsSelect.children;
+  for (i = 0; i < roomsAmountOptions.length; i++) {
+    roomsAmountOptions[i].removeAttribute('disabled');
+
+    // блокирую, если количество комнат меньше, чем количество гостей
+    if (roomsAmountOptions[i].value < guestsSelect.value) {
+      roomsAmountOptions[i].setAttribute('disabled', 'disabled');
+    }
+
+    // блокирую все варианты количества комнат, кроме 100, если выбран вариант "не для гостей"
+    if ((guestsSelect.value < 1) && (roomsAmountOptions[i].value < MAX_ROOMS_AVAILABLE)) {
+      roomsAmountOptions[i].setAttribute('disabled', 'disabled');
+    }
+
+    // блокирую "100 комнат", если выбран 1 гость
+    if ((+guestsSelect.value === 1) && (roomsAmountOptions[i].value > MAX_ROOMS_AVAILABLE)) {
+      roomsAmountOptions[i].setAttribute('disabled', 'disabled');
+    }
+  }
+};
+
+roomNumber.addEventListener('change', function () {
+  validateRoomsAndGuestsSelects(roomNumber, capacity);
+});
+
+capacity.addEventListener('change', function () {
+  validateRoomsAndGuestsSelects(roomNumber, capacity);
 });
