@@ -134,6 +134,9 @@ var renderAdvertsOnMap = function () {
 };
 
 var renderCard = function (advert) {
+  if (map.querySelector('.opened-card')) {
+    map.querySelector('.opened-card').remove();
+  }
 
   var newCard = cardTemplate.cloneNode(true);
   newCard.querySelector('.popup__title').textContent = advert.offer.title;
@@ -154,6 +157,7 @@ var renderCard = function (advert) {
     newCard.querySelector('.popup__photos').appendChild(newPhoto);
   }
   newCard.querySelector('.popup__avatar').src = advert.autor.avatar;
+  newCard.classList.add('opened-card');
   map.insertBefore(newCard, filterContainer);
 
   var popupButtonClose = newCard.querySelector('.popup__close');
