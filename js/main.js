@@ -255,6 +255,13 @@ var validateRoomsAndGuestsSelects = function (roomsSelect, guestsSelect) {
       roomsAmountOptions[i].setAttribute('disabled', 'disabled');
     }
   }
+
+  // разблокировываю селек с комнатами, если выбраны "100 комнат"" и "не для гостей"
+  if ((+roomNumber.value === 100) && (+capacity.value === 0)) {
+    for (i = 0; i < roomsAmountOptions.length; i++) {
+      roomsAmountOptions[i].removeAttribute('disabled');
+    }
+  }
 };
 
 roomNumber.addEventListener('change', function () {
