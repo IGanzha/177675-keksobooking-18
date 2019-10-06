@@ -16,8 +16,8 @@ var CHECK_OUT_TIMES = ['12:00', '13:00', '14:00'];
 var MIN_INDEX_TIMES = 0;
 var MAX_NUMBER_PRICE = 100000;
 var MIN_NUMBER_PRICE = 0;
-var MAX_NUMBER_AMOUNT = 10;
-var MIN_NUMBER_AMOUNT = 1;
+var MAX_NUMBERS_AMOUNT = 10;
+var MIN_NUMBERS_AMOUNT = 1;
 var MAX_GUESTS_AMOUNT = 10;
 var MIN_GUESTS_AMOUNT = 1;
 var PIN_WIDTH = 50;
@@ -26,6 +26,14 @@ var MIN_Y_COORD = 130;
 var MAX_Y_COORD = 630;
 var MIN_X_COORD = PIN_WIDTH / 2;
 var MAX_X_COORD = map.getBoundingClientRect().width - PIN_WIDTH / 2;
+var ENTER_KEYCODE = 13;
+// var ESC_KEYCODE = 27; на будущее
+var START_MAIN_PIN_COORD_X = 570;
+var START_MAIN_PIN_COORD_Y = 375;
+var MAIN_PIN_HEIGHT = 65;
+var MAIN_PIN_WIDTH = 65;
+var PIN_ARROWHEAD_HEIGHT = 22;
+var MAX_ROOMS_AVAILABLE = 5;
 
 var PHOTOS_URLS_ARRAY = [
   'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
@@ -46,8 +54,11 @@ var mapPins = document.querySelector('.map__pins');
 var fragment = document.createDocumentFragment();
 var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 var filterContainer = document.querySelector('.map__filters-container');
+var mainPin = document.querySelector('.map__pin--main');
+var adForm = document.querySelector('.ad-form');
+var addressField = document.querySelector('#address');
 
-map.classList.remove('map--faded');
+// map.classList.remove('map--faded');
 
 var getRandomNumber = function (min, max, isInteger) { // может параметр isRound получше назвать можно
   if (isInteger) {
@@ -83,7 +94,7 @@ var createAdvertsArray = function (amount) {
         'address': '"' + location.x + ', ' + location.y + '"',
         'price': getRandomNumber(MIN_NUMBER_PRICE, MAX_NUMBER_PRICE, true),
         'type': NUMBER_TYPES[getRandomNumber(MIN_INDEX_TYPES, NUMBER_TYPES.length, false)],
-        'rooms': getRandomNumber(MIN_NUMBER_AMOUNT, MAX_NUMBER_AMOUNT, true),
+        'rooms': getRandomNumber(MIN_NUMBERS_AMOUNT, MAX_NUMBERS_AMOUNT, true),
         'guests': getRandomNumber(MIN_GUESTS_AMOUNT, MAX_GUESTS_AMOUNT, true),
         'checkin': CHECK_IN_TIMES[getRandomNumber(MIN_INDEX_TIMES, CHECK_IN_TIMES.length, false)],
         'checkout': CHECK_OUT_TIMES[getRandomNumber(MIN_INDEX_TIMES, CHECK_OUT_TIMES.length, false)],
@@ -107,6 +118,8 @@ var createPin = function (advert) {
   return newPin;
 };
 
+// ------------------ Тревис ругается, что она нигде не используется. Но мы по заданию вызов функции убрали... как быть?
+
 var renderPins = function () {
   var adverts = createAdvertsArray(ADVERTS_AMOUNT);
   for (var i = 0; i < ADVERTS_AMOUNT; i++) {
@@ -116,7 +129,9 @@ var renderPins = function () {
 
 };
 
-renderPins();
+// renderPins();
+
+// ---------------------аналогично -  ругается Тревис
 
 var renderCard = function () {
   var newCard = cardTemplate.cloneNode(true);
@@ -142,4 +157,117 @@ var renderCard = function () {
   return newCard;
 };
 
-map.insertBefore(renderCard(), filterContainer);
+// map.insertBefore(renderCard(), filterContainer);
+
+// ----------  деактивирую все инпуты в форме объявления
+var formFieldsets = document.querySelectorAll('fieldset');
+for (var i = 0; i < formFieldsets.length; i++) {
+  formFieldsets[i].setAttribute('disabled', 'disabled');
+}
+
+// ----------  деактивирую все инпуты в фильтрах на карте
+var mapFilterInputs = document.querySelector('.map__filters').querySelectorAll('select');
+for (i = 0; i < mapFilterInputs.length; i++) {
+  mapFilterInputs[i].setAttribute('disabled', 'disabled');
+}
+
+// ----------   добавляю координаты в поле адрес в неактивном состоянии
+addressField.value = (START_MAIN_PIN_COORD_X + MAIN_PIN_WIDTH / 2) + ', ' + (START_MAIN_PIN_COORD_Y + MAIN_PIN_HEIGHT / 2);
+
+var activateMap = function () {
+  map.classList.remove('map--faded');
+  filterContainer.classList.remove('hidden');
+  adForm.classList.remove('ad-form--disabled');
+
+  for (i = 0; i < formFieldsets.length; i++) {
+    formFieldsets[i].removeAttribute('disabled');
+  }
+
+  for (i = 0; i < mapFilterInputs.length; i++) {
+    mapFilterInputs[i].removeAttribute('disabled');
+  }
+
+  // -----------меняю значение в поле адрес - определяю их по концу метки
+  addressField.value = (START_MAIN_PIN_COORD_X + MAIN_PIN_WIDTH / 2) + ', ' + (START_MAIN_PIN_COORD_Y + MAIN_PIN_HEIGHT + PIN_ARROWHEAD_HEIGHT);
+  // ---------- удаляю обработчики
+  mainPin.removeEventListener('mousedown', activateMap);
+  mainPin.removeEventListener('keydown', onPinPressEnter);
+};
+
+var onPinPressEnter = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    activateMap();
+  }
+};
+
+mainPin.addEventListener('mousedown', activateMap);
+mainPin.addEventListener('keydown', onPinPressEnter);
+
+mainPin.addEventListener('mousemove', function (evt) {
+  addressField.value = evt.pageX + ', ' + (evt.pageY + (MAIN_PIN_HEIGHT / 2) + PIN_ARROWHEAD_HEIGHT);
+});
+
+
+// ---------- ОГРАНИЧЕНИЕ НА ВВОД ПОЛЕЙ  -------
+
+var roomNumber = document.querySelector('#room_number');
+var capacity = document.querySelector('#capacity');
+
+var validateRoomsAndGuestsSelects = function (roomsSelect, guestsSelect) {
+
+  var guestsAmountOptions = guestsSelect.children;
+  for (i = 0; i < guestsAmountOptions.length; i++) {
+    guestsAmountOptions[i].removeAttribute('disabled');
+
+    // ------- блокирую, если количество гостей больше, чем комнат
+    if (guestsAmountOptions[i].value > roomsSelect.value) {
+      guestsAmountOptions[i].setAttribute('disabled', 'disabled');
+    }
+
+    // ------- блокирую все варианты гостей, кроме "не для гостей", если очень много комнат - условно ввел MAX_ROOMS_AVAILABLE = 5 - сюда будет попадать "100 комнат".
+    if ((roomsSelect.value > MAX_ROOMS_AVAILABLE) && (guestsAmountOptions[i].value > 0)) {
+      guestsAmountOptions[i].setAttribute('disabled', 'disabled');
+    }
+
+    // блокирую вариант "не для гостей", если количество комнат не превышает допустимое MAX_ROOMS_AVAILABLE
+    if ((roomsSelect.value < MAX_ROOMS_AVAILABLE) && (guestsAmountOptions[i].value < 1)) {
+      guestsAmountOptions[i].setAttribute('disabled', 'disabled');
+    }
+  }
+
+  // --------- ОБРАТНАЯ БЛОКИРОВКА - ------
+  var roomsAmountOptions = roomsSelect.children;
+  for (i = 0; i < roomsAmountOptions.length; i++) {
+    roomsAmountOptions[i].removeAttribute('disabled');
+
+    // блокирую, если количество комнат меньше, чем количество гостей
+    if (roomsAmountOptions[i].value < guestsSelect.value) {
+      roomsAmountOptions[i].setAttribute('disabled', 'disabled');
+    }
+
+    // блокирую все варианты количества комнат, кроме 100, если выбран вариант "не для гостей"
+    if ((guestsSelect.value < 1) && (roomsAmountOptions[i].value < MAX_ROOMS_AVAILABLE)) {
+      roomsAmountOptions[i].setAttribute('disabled', 'disabled');
+    }
+
+    // блокирую "100 комнат", если выбран 1 гость
+    if ((+guestsSelect.value === 1) && (roomsAmountOptions[i].value > MAX_ROOMS_AVAILABLE)) {
+      roomsAmountOptions[i].setAttribute('disabled', 'disabled');
+    }
+  }
+
+  // разблокировываю селек с комнатами, если выбраны "100 комнат"" и "не для гостей"
+  if ((+roomNumber.value === 100) && (+capacity.value === 0)) {
+    for (i = 0; i < roomsAmountOptions.length; i++) {
+      roomsAmountOptions[i].removeAttribute('disabled');
+    }
+  }
+};
+
+roomNumber.addEventListener('change', function () {
+  validateRoomsAndGuestsSelects(roomNumber, capacity);
+});
+
+capacity.addEventListener('change', function () {
+  validateRoomsAndGuestsSelects(roomNumber, capacity);
+});
