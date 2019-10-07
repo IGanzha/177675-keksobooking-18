@@ -4,7 +4,7 @@ var ADVERTS_AMOUNT = 8;
 
 var NUMBER_TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var MIN_INDEX_TYPES = 0;
-var RUSSIAN_TYPES = {
+var RussianTypes = {
   'palace': 'Дворец',
   'flat': 'Квартира',
   'house': 'Дом',
@@ -143,7 +143,7 @@ var renderCard = function (advert) {
   newCard.querySelector('.popup__text--address').textContent = advert.offer.adress;
 
   newCard.querySelector('.popup__text--price').textContent = advert.offer.price + '₽/ночь';
-  newCard.querySelector('.popup__type').textContent = RUSSIAN_TYPES[advert.offer.type];
+  newCard.querySelector('.popup__type').textContent = RussianTypes[advert.offer.type];
   newCard.querySelector('.popup__text--capacity').textContent = advert.offer.rooms + ' комнат(-а/-ы) для ' + advert.offer.guests + ' гостей(-я)';
   newCard.querySelector('.popup__text--time').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout + '.';
   newCard.querySelector('.popup__features').textContent = advert.offer.features;
@@ -239,15 +239,20 @@ var validatePriceInput = function (priceElement, type) {
   priceElement.removeAttribute('min');
   priceElement.setAttribute('required', 'required');
   priceElement.setAttribute('max', 1000000);
+  priceElement.removeAttribute('placeholder');
 
   if (type.value === 'bungalo') {
     priceElement.setAttribute('min', 0);
+    priceElement.setAttribute('placeholder', '0');
   } else if (type.value === 'flat') {
     priceElement.setAttribute('min', 1000);
+    priceElement.setAttribute('placeholder', 1000);
   } else if (type.value === 'house') {
     priceElement.setAttribute('min', 5000);
+    priceElement.setAttribute('placeholder', 5000);
   } else if (type.value === 'palace') {
     priceElement.setAttribute('min', 10000);
+    priceElement.setAttribute('placeholder', 10000);
   }
 };
 
@@ -256,7 +261,7 @@ var setTimeOutInput = function (timeInElement, timeOutElement) {
     // timeOutElement.children[i].removeAttribute('selected');
 
     if (timeInElement.value === timeOutElement.children[i].value) {
-      timeOutElement.children[i].setAttribute('selected', 'selected');
+      timeOutElement.selectedIndex = i;
     } else {
       timeOutElement.children[i].removeAttribute('selected');
     }
@@ -268,7 +273,7 @@ var setTimeInInput = function (timeInElement, timeOutElement) {
     // timeInElement.children[i].removeAttribute('selected');
 
     if (timeOutElement.value === timeInElement.children[i].value) {
-      timeInElement.children[i].setAttribute('selected', 'selected');
+      timeInElement.selectedIndex = i;
     } else {
       timeInElement.children[i].removeAttribute('selected');
     }
@@ -284,6 +289,10 @@ titleField.addEventListener('input', function () {
 });
 
 priceField.addEventListener('input', function () {
+  validatePriceInput(priceField, typeField);
+});
+
+typeField.addEventListener('change', function () {
   validatePriceInput(priceField, typeField);
 });
 
