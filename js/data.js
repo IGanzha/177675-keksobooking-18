@@ -21,17 +21,6 @@
   var MIN_NUMBERS_AMOUNT = 1;
   var MAX_GUESTS_AMOUNT = 10;
   var MIN_GUESTS_AMOUNT = 1;
-  var PIN_WIDTH = 50;
-  var PIN_HEIGHT = 70;
-  var MIN_Y_COORD = 130;
-  var MAX_Y_COORD = 630;
-  var MIN_X_COORD = PIN_WIDTH / 2;
-  var MAX_X_COORD = window.util.map.getBoundingClientRect().width - PIN_WIDTH / 2;
-  var START_MAIN_PIN_COORD_X = 570;
-  var START_MAIN_PIN_COORD_Y = 375;
-  var MAIN_PIN_HEIGHT = 65;
-  var MAIN_PIN_WIDTH = 65;
-  var PIN_ARROWHEAD_HEIGHT = 22;
   var MAX_ROOMS_AVAILABLE = 5;
   var PHOTOS_URLS_ARRAY = [
     'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
@@ -68,8 +57,8 @@
     var adverts = [];
     for (var i = 0; i < amount; i++) {
       var location = {
-        'x': (getRandomNumber(MIN_X_COORD, MAX_X_COORD, false) - PIN_WIDTH / 2),
-        'y': (getRandomNumber(MIN_Y_COORD, MAX_Y_COORD, true) - PIN_HEIGHT / 2),
+        'x': (getRandomNumber(window.map.MIN_X_COORD, window.map.MAX_X_COORD, false) - window.map.PIN_WIDTH / 2),
+        'y': (getRandomNumber(window.map.MIN_Y_COORD, window.map.MAX_Y_COORD, true) - window.map.PIN_HEIGHT / 2),
       };
       adverts[i] = {
         'autor': {
@@ -96,14 +85,9 @@
     return adverts;
   };
 
-  window.createMocks = {
+  window.data = {
     AccommodationTypesRus: AccommodationTypesRus,
-    createAdvertsArray: createAdvertsArray(),
-    START_MAIN_PIN_COORD_X: START_MAIN_PIN_COORD_X,
-    START_MAIN_PIN_COORD_Y: START_MAIN_PIN_COORD_Y,
-    MAIN_PIN_WIDTH: MAIN_PIN_WIDTH,
-    MAIN_PIN_HEIGHT: MAIN_PIN_HEIGHT,
-    PIN_ARROWHEAD_HEIGHT: PIN_ARROWHEAD_HEIGHT,
+    createAdvertsArray: createAdvertsArray,
     MAX_ROOMS_AVAILABLE: MAX_ROOMS_AVAILABLE
   };
 })();

@@ -83,6 +83,9 @@
     setTimeInInput(timeInField, timeOutField);
   });
 
+  // ----------   добавляю координаты в поле адрес в неактивном состоянии
+  window.map.addressField.value = (window.map.START_MAIN_PIN_COORD_X + window.map.MAIN_PIN_WIDTH / 2) + ', ' + (window.map.START_MAIN_PIN_COORD_Y + window.map.MAIN_PIN_HEIGHT / 2);
+
 
   // -------------ОГРАНИЧЕНИЕ НА ВВОД ПОЛЕЙ  -------
   var roomNumber = document.querySelector('#room_number');
@@ -100,12 +103,12 @@
       }
 
       // ------- блокирую все варианты гостей, кроме "не для гостей", если очень много комнат - условно ввел MAX_ROOMS_AVAILABLE = 5 - сюда будет попадать "100 комнат".
-      if ((roomsSelect.value > window.createMocks.MAX_ROOMS_AVAILABLE) && (guestsAmountOptions[i].value > 0)) {
+      if ((roomsSelect.value > window.data.MAX_ROOMS_AVAILABLE) && (guestsAmountOptions[i].value > 0)) {
         guestsAmountOptions[i].setAttribute('disabled', 'disabled');
       }
 
       // блокирую вариант "не для гостей", если количество комнат не превышает допустимое MAX_ROOMS_AVAILABLE
-      if ((roomsSelect.value < window.createMocks.MAX_ROOMS_AVAILABLE) && (guestsAmountOptions[i].value < 1)) {
+      if ((roomsSelect.value < window.data.MAX_ROOMS_AVAILABLE) && (guestsAmountOptions[i].value < 1)) {
         guestsAmountOptions[i].setAttribute('disabled', 'disabled');
       }
     }
@@ -121,12 +124,12 @@
       }
 
       // блокирую все варианты количества комнат, кроме 100, если выбран вариант "не для гостей"
-      if ((guestsSelect.value < 1) && (roomsAmountOptions[i].value < window.createMocks.MAX_ROOMS_AVAILABLE)) {
+      if ((guestsSelect.value < 1) && (roomsAmountOptions[i].value < window.data.MAX_ROOMS_AVAILABLE)) {
         roomsAmountOptions[i].setAttribute('disabled', 'disabled');
       }
 
       // блокирую "100 комнат", если выбран 1 гость
-      if ((+guestsSelect.value === 1) && (roomsAmountOptions[i].value > window.createMocks.MAX_ROOMS_AVAILABLE)) {
+      if ((+guestsSelect.value === 1) && (roomsAmountOptions[i].value > window.data.MAX_ROOMS_AVAILABLE)) {
         roomsAmountOptions[i].setAttribute('disabled', 'disabled');
       }
     }
