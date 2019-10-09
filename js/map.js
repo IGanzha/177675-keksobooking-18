@@ -44,18 +44,16 @@
       adForm.classList.remove('ad-form--disabled');
       renderAdvertsOnMap();
 
-      for (var i = 0; i < window.utils.formFieldsets.length; i++) {
-        window.utils.formFieldsets[i].removeAttribute('disabled');
-      }
-
-      for (i = 0; i < window.utils.mapFilterInputs.length; i++) {
-        window.utils.mapFilterInputs[i].removeAttribute('disabled');
-      }
+      window.utils.enableInputs();
 
       // -----------меняю значение в поле адрес - определяю их по концу метки
       addressField.value = (START_MAIN_PIN_COORD_X + MAIN_PIN_WIDTH / 2) + ', ' + (START_MAIN_PIN_COORD_Y + MAIN_PIN_HEIGHT + PIN_ARROWHEAD_HEIGHT);
 
       mainPin.removeEventListener('keydown', onPinPressEnter);
+    }
+
+    if (evt.keyCode === window.utils.ENTER_KEYCODE) {
+      onMouseUp();
     }
 
     var startCoords = {
@@ -71,7 +69,6 @@
         y: startCoords.y - moveEvt.clientY
       };
 
-      // корректно определение координат определяется? и в поле с формой?
       var limitCoords = function (element, minCoord, maxCoord, axis) {
         var coord = 0;
         if (axis === 'y') {
@@ -115,7 +112,6 @@
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
-
   };
 
   var onPinPressEnter = function (evt) {
