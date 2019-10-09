@@ -55,8 +55,7 @@
       // -----------меняю значение в поле адрес - определяю их по концу метки
       addressField.value = (START_MAIN_PIN_COORD_X + MAIN_PIN_WIDTH / 2) + ', ' + (START_MAIN_PIN_COORD_Y + MAIN_PIN_HEIGHT + PIN_ARROWHEAD_HEIGHT);
 
-      mainPin.removeEventListener('mousedown', activateMap);
-      mainPin.removeEventListener('keydown', pinPressHandler);
+      mainPin.removeEventListener('keydown', onPinPressEnter);
     }
 
     var startCoords = {
@@ -119,11 +118,7 @@
 
   };
 
-  var pinClickHandler = function (evt) {
-    activateMap(evt);
-  };
-
-  var pinPressHandler = function (evt) {
+  var onPinPressEnter = function (evt) {
     if (evt.keyCode === window.utils.ENTER_KEYCODE) {
       if (document.querySelector('.map--faded')) {
         activateMap(evt);
@@ -133,11 +128,8 @@
 
   window.utils.disableInputs();
 
-  mainPin.addEventListener('mousedown', pinClickHandler);
-  mainPin.addEventListener('keydown', pinPressHandler);
-  mainPin.addEventListener('mousemove', function () {
-
-  });
+  mainPin.addEventListener('mousedown', activateMap);
+  mainPin.addEventListener('keydown', onPinPressEnter);
 
   window.map = {
     addressField: addressField,
