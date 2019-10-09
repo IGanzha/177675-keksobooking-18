@@ -38,24 +38,79 @@
     mapPins.appendChild(fragment);
   };
 
-  var activateMap = function () {
-    window.utils.mapSection.classList.remove('map--faded');
-    adForm.classList.remove('ad-form--disabled');
-    renderAdvertsOnMap();
+  var activateMap = function (evt) {
 
-    for (var i = 0; i < window.utils.formFieldsets.length; i++) {
-      window.utils.formFieldsets[i].removeAttribute('disabled');
+    if (document.querySelector('.map--faded')) {
+      window.utils.mapSection.classList.remove('map--faded');
+      adForm.classList.remove('ad-form--disabled');
+      renderAdvertsOnMap();
+
+      window.utils.enableInputs();
+
+      // -----------меняю значение в поле адрес - определяю их по концу метки
+      addressField.value = (START_MAIN_PIN_COORD_X + MAIN_PIN_WIDTH / 2) + ', ' + (START_MAIN_PIN_COORD_Y + MAIN_PIN_HEIGHT + PIN_ARROWHEAD_HEIGHT);
+
+      mainPin.removeEventListener('keydown', onPinPressEnter);
     }
 
-    for (i = 0; i < window.utils.mapFilterInputs.length; i++) {
-      window.utils.mapFilterInputs[i].removeAttribute('disabled');
+    var startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      var limitCoords = function (element, minCoord, maxCoord, axis) {
+        var coord = 0;
+        if (axis === 'y') {
+          if (element.offsetTop - shift.y > MAX_Y_COORD) {
+            coord = MAX_Y_COORD;
+          } else if (element.offsetTop - shift.y < MIN_Y_COORD) {
+            coord = MIN_Y_COORD;
+          } else {
+            coord = element.offsetTop - shift.y;
+          }
+
+        } else if (axis === 'x') {
+          if (element.offsetLeft - shift.x > MAX_X_COORD) {
+            coord = MAX_X_COORD;
+          } else if (element.offsetLeft - shift.x < MIN_X_COORD) {
+            coord = MIN_X_COORD;
+          } else {
+            coord = element.offsetLeft - shift.x;
+          }
+        }
+        return coord;
+      };
+
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+
+      mainPin.style.top = limitCoords(mainPin, MIN_Y_COORD, MAX_Y_COORD, 'y') + 'px';
+      mainPin.style.left = limitCoords(mainPin, MIN_X_COORD, MAX_X_COORD, 'x') + 'px';
+
+      addressField.value = (limitCoords(mainPin, MIN_X_COORD, MAX_X_COORD, 'x') + MAIN_PIN_WIDTH / 2) + ', ' + (limitCoords(mainPin, MIN_Y_COORD, MAX_Y_COORD, 'y') + PIN_ARROWHEAD_HEIGHT);
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    if (evt.keyCode !== window.utils.ENTER_KEYCODE) {
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
     }
-
-    // -----------меняю значение в поле адрес - определяю их по концу метки
-    addressField.value = (window.data.START_MAIN_PIN_COORD_X + window.data.MAIN_PIN_WIDTH / 2) + ', ' + (window.data.START_MAIN_PIN_COORD_Y + window.data.MAIN_PIN_HEIGHT + window.data.PIN_ARROWHEAD_HEIGHT);
-
-    mainPin.removeEventListener('mousedown', activateMap);
-    mainPin.removeEventListener('keydown', pinPressHandler);
   };
 
   var pinPressHandler = function (evt) {
