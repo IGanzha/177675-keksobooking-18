@@ -18,10 +18,10 @@
 
   var enableInputs = function () {
     for (var i = 0; i < formFieldsets.length; i++) {
-      formFieldsets[i].removeAttribute('disabled', 'disabled');
+      formFieldsets[i].removeAttribute('disabled');
     }
     for (i = 0; i < mapFilterInputs.length; i++) {
-      mapFilterInputs[i].removeAttribute('disabled', 'disabled');
+      mapFilterInputs[i].removeAttribute('disabled');
     }
   };
 

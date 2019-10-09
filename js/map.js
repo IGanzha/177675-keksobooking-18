@@ -52,10 +52,6 @@
       mainPin.removeEventListener('keydown', onPinPressEnter);
     }
 
-    if (evt.keyCode === window.utils.ENTER_KEYCODE) {
-      onMouseUp();
-    }
-
     var startCoords = {
       x: evt.clientX,
       y: evt.clientY
@@ -110,8 +106,10 @@
       document.removeEventListener('mouseup', onMouseUp);
     };
 
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+    if (evt.keyCode !== window.utils.ENTER_KEYCODE) {
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    }
   };
 
   var onPinPressEnter = function (evt) {
