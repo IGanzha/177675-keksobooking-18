@@ -10,10 +10,11 @@
   var PIN_ARROWHEAD_HEIGHT = 22;
   var PIN_WIDTH = 50;
   var PIN_HEIGHT = 70;
-  var MIN_Y_COORD = 130 - PIN_ARROWHEAD_HEIGHT;
-  var MAX_Y_COORD = 630 - PIN_ARROWHEAD_HEIGHT;
-  var MIN_X_COORD = 0 - MAIN_PIN_WIDTH / 2;
-  var MAX_X_COORD = window.utils.mapSection.getBoundingClientRect().width - MAIN_PIN_WIDTH / 2;
+  var MIN_Y_COORD = 130;
+  var MAX_Y_COORD = 630;
+  var MIN_X_COORD = 0;
+  var MAX_X_COORD = window.utils.mapSection.getBoundingClientRect().width - PIN_WIDTH / 2;
+
   var mapPins = document.querySelector('.map__pins');
   var fragment = document.createDocumentFragment();
   var mainPin = document.querySelector('.map__pin--main');
@@ -112,18 +113,20 @@
     }
   };
 
-  var onPinPressEnter = function (evt) {
+  var pinPressHandler = function (evt) {
     if (evt.keyCode === window.utils.ENTER_KEYCODE) {
-      if (document.querySelector('.map--faded')) {
-        activateMap(evt);
-      }
+      activateMap();
     }
   };
 
   window.utils.disableInputs();
 
   mainPin.addEventListener('mousedown', activateMap);
-  mainPin.addEventListener('keydown', onPinPressEnter);
+  mainPin.addEventListener('keydown', pinPressHandler);
+
+  mainPin.addEventListener('mousemove', function (evt) {
+    addressField.value = evt.pageX + ', ' + (evt.pageY + (window.data.MAIN_PIN_HEIGHT / 2) + window.data.PIN_ARROWHEAD_HEIGHT);
+  });
 
   window.map = {
     addressField: addressField,
