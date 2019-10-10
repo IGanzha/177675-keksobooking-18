@@ -2,7 +2,6 @@
 
 (function () {
 
-  // var ADVERTS_AMOUNT = 8;
   var ACCOMMODATION_TYPES = ['palace', 'flat', 'house', 'bungalo'];
   var AccommodationTypesRus = {
     'palace': 'Дворец',

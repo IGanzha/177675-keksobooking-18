@@ -5,7 +5,7 @@
   var createPin = function (advert) {
 
     var newPin = pinTemplate.cloneNode(true);
-    newPin.querySelector('img').src = advert.autor.avatar;
+    newPin.querySelector('img').src = advert.author.avatar;
     newPin.style.left = advert.location.x + 'px';
     newPin.style.top = advert.location.y + 'px';
     return newPin;

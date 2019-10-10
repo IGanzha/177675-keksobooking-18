@@ -26,7 +26,7 @@
       newPhoto.src = advert.offer.photos[j];
       newCard.querySelector('.popup__photos').appendChild(newPhoto);
     }
-    newCard.querySelector('.popup__avatar').src = advert.autor.avatar;
+    newCard.querySelector('.popup__avatar').src = advert.author.avatar;
     newCard.classList.add('opened-card');
     window.utils.mapSection.insertBefore(newCard, filterContainer);
     var popupButtonClose = newCard.querySelector('.popup__close');
@@ -43,7 +43,8 @@
   };
 
   window.renderCard = {
-    renderCard: renderCard
+    renderCard: renderCard,
+    filterContainer: filterContainer
   };
 
 })();
