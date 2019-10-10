@@ -142,10 +142,6 @@
   mainPin.addEventListener('mousedown', activateMap);
   mainPin.addEventListener('keydown', onPinPressEnter);
 
-  mainPin.addEventListener('mousemove', function (evt) {
-    addressField.value = evt.pageX + ', ' + (evt.pageY + (window.data.MAIN_PIN_HEIGHT / 2) + window.data.PIN_ARROWHEAD_HEIGHT);
-  });
-
   window.map = {
     addressField: addressField,
     START_MAIN_PIN_COORD_X: START_MAIN_PIN_COORD_X,
