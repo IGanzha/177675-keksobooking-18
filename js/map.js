@@ -2,7 +2,6 @@
 
 (function () {
 
-  var ADVERTS_AMOUNT = 8;
   var START_MAIN_PIN_COORD_X = 570;
   var START_MAIN_PIN_COORD_Y = 375;
   var MAIN_PIN_HEIGHT = 65;
@@ -10,48 +9,67 @@
   var PIN_ARROWHEAD_HEIGHT = 22;
   var PIN_WIDTH = 50;
   var PIN_HEIGHT = 70;
-  var MIN_Y_COORD = 130;
-  var MAX_Y_COORD = 630;
-  var MIN_X_COORD = 0;
-  var MAX_X_COORD = window.utils.mapSection.getBoundingClientRect().width - PIN_WIDTH / 2;
+  var MIN_Y_COORD = 130 - PIN_ARROWHEAD_HEIGHT;
+  var MAX_Y_COORD = 630 - PIN_ARROWHEAD_HEIGHT;
+  var MIN_X_COORD = 0 - MAIN_PIN_WIDTH / 2;
+  var MAX_X_COORD = window.utils.mapSection.getBoundingClientRect().width - MAIN_PIN_WIDTH / 2;
 
   var mapPins = document.querySelector('.map__pins');
   var fragment = document.createDocumentFragment();
   var mainPin = document.querySelector('.map__pin--main');
   var adForm = document.querySelector('.ad-form');
   var addressField = document.querySelector('#address');
+  var mainSection = document.querySelector('main');
 
-  var renderAdvertsOnMap = function () {
-    var adverts = window.data.createAdvertsArray(ADVERTS_AMOUNT);
-    for (var i = 0; i < ADVERTS_AMOUNT; i++) {
+
+  var errorHandler = function (errorMessage) {
+    var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+    var newError = errorTemplate.cloneNode(true);
+    newError.querySelector('.error__message').textContent = errorMessage;
+
+    var tryingAgainButton = newError.querySelector('.error__button');
+    tryingAgainButton.addEventListener('click', function (evt) {
+      evt.preventDefault();
+      newError.remove();
+      window.load(renderAdvertsOnMap, errorHandler);
+    });
+
+    mainSection.insertAdjacentElement('afterbegin', newError);
+  };
+
+  var renderAdvertsOnMap = function (adverts) {
+
+    for (var i = 0; i < adverts.length; i++) {
       var pin = window.createPin.createPin(adverts[i]);
       fragment.appendChild(pin);
 
-      var addEventListenerToPin = function (pinElement, advertElement) {
+      var addListenerToAdvertPin = function (pinElement, advertElement) {
         pinElement.addEventListener('click', function () {
           window.renderCard.renderCard(advertElement);
         });
       };
 
-      addEventListenerToPin(pin, adverts[i]);
+      addListenerToAdvertPin(pin, adverts[i]);
     }
     mapPins.appendChild(fragment);
   };
 
-  var activateMap = function (evt) {
+  var activateMap = function () {
 
     if (document.querySelector('.map--faded')) {
       window.utils.mapSection.classList.remove('map--faded');
       adForm.classList.remove('ad-form--disabled');
-      renderAdvertsOnMap();
+      window.load(renderAdvertsOnMap, errorHandler);
 
       window.utils.enableInputs();
 
-      // -----------меняю значение в поле адрес - определяю их по концу метки
       addressField.value = (START_MAIN_PIN_COORD_X + MAIN_PIN_WIDTH / 2) + ', ' + (START_MAIN_PIN_COORD_Y + MAIN_PIN_HEIGHT + PIN_ARROWHEAD_HEIGHT);
 
       mainPin.removeEventListener('keydown', onPinPressEnter);
     }
+  };
+
+  var addListenerToMainPin = function (evt) {
 
     var startCoords = {
       x: evt.clientX,
@@ -107,13 +125,11 @@
       document.removeEventListener('mouseup', onMouseUp);
     };
 
-    if (evt.keyCode !== window.utils.ENTER_KEYCODE) {
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
-    }
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   };
 
-  var pinPressHandler = function (evt) {
+  var onPinPressEnter = function (evt) {
     if (evt.keyCode === window.utils.ENTER_KEYCODE) {
       activateMap();
     }
@@ -121,12 +137,11 @@
 
   window.utils.disableInputs();
 
-  mainPin.addEventListener('mousedown', activateMap);
-  mainPin.addEventListener('keydown', pinPressHandler);
-
-  mainPin.addEventListener('mousemove', function (evt) {
-    addressField.value = evt.pageX + ', ' + (evt.pageY + (window.data.MAIN_PIN_HEIGHT / 2) + window.data.PIN_ARROWHEAD_HEIGHT);
+  mainPin.addEventListener('mousedown', function (evt) {
+    activateMap();
+    addListenerToMainPin(evt);
   });
+  mainPin.addEventListener('keydown', activateMap);
 
   window.map = {
     addressField: addressField,

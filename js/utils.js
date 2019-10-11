@@ -7,6 +7,7 @@
   var formFieldsets = document.querySelectorAll('fieldset');
   var mapFilterInputs = document.querySelector('.map__filters').querySelectorAll('select');
 
+
   var disableInputs = function () {
     for (var i = 0; i < formFieldsets.length; i++) {
       formFieldsets[i].setAttribute('disabled', 'disabled');
