@@ -31,6 +31,7 @@
     tryingAgainButton.addEventListener('click', function (evt) {
       evt.preventDefault();
       newError.remove();
+      window.load(renderAdvertsOnMap, errorHandler);
     });
 
     mainSection.insertAdjacentElement('afterbegin', newError);
