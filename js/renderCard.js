@@ -6,9 +6,7 @@
   var filterContainer = document.querySelector('.map__filters-container');
 
   var renderCard = function (advert) {
-    if (window.utils.mapSection.querySelector('.opened-card')) {
-      window.utils.mapSection.querySelector('.opened-card').remove();
-    }
+    window.utils.removeOpenedAdCard();
 
     var newCard = cardTemplate.cloneNode(true);
     newCard.querySelector('.popup__title').textContent = advert.offer.title;
