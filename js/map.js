@@ -17,30 +17,14 @@
   var mapPins = document.querySelector('.map__pins');
   var fragment = document.createDocumentFragment();
   var mainPin = document.querySelector('.map__pin--main');
-  var adForm = document.querySelector('.ad-form');
   var addressField = document.querySelector('#address');
   var mainSection = document.querySelector('main');
-
-
-  var errorHandler = function (errorMessage) {
-    var errorTemplate = document.querySelector('#error').content.querySelector('.error');
-    var newError = errorTemplate.cloneNode(true);
-    newError.querySelector('.error__message').textContent = errorMessage;
-
-    var tryingAgainButton = newError.querySelector('.error__button');
-    tryingAgainButton.addEventListener('click', function (evt) {
-      evt.preventDefault();
-      newError.remove();
-      window.load(renderAdvertsOnMap, errorHandler);
-    });
-
-    mainSection.insertAdjacentElement('afterbegin', newError);
-  };
 
   var renderAdvertsOnMap = function (adverts) {
 
     for (var i = 0; i < adverts.length; i++) {
       var pin = window.createPin.createPin(adverts[i]);
+      pin.classList.add('map__pin--advert');
       fragment.appendChild(pin);
 
       var addListenerToAdvertPin = function (pinElement, advertElement) {
@@ -58,8 +42,8 @@
 
     if (document.querySelector('.map--faded')) {
       window.utils.mapSection.classList.remove('map--faded');
-      adForm.classList.remove('ad-form--disabled');
-      window.load(renderAdvertsOnMap, errorHandler);
+      window.form.form.classList.remove('ad-form--disabled');
+      window.load(renderAdvertsOnMap, window.utils.errorHandler);
 
       window.utils.enableInputs();
 
@@ -155,7 +139,12 @@
     MIN_Y_COORD: MIN_Y_COORD,
     MAX_Y_COORD: MAX_Y_COORD,
     MIN_X_COORD: MIN_X_COORD,
-    MAX_X_COORD: MAX_X_COORD
+    MAX_X_COORD: MAX_X_COORD,
+    mainSection: mainSection,
+    mapPins: mapPins,
+    activateMap: activateMap,
+    mainPin: mainPin,
+    renderAdvertsOnMap: renderAdvertsOnMap
   };
 
 })();
