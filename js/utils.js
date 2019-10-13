@@ -7,7 +7,7 @@
   var formFieldsets = document.querySelectorAll('fieldset');
   var mapFilterInputs = document.querySelector('.map__filters').querySelectorAll('select');
   var URL_LOAD = 'https://js.dump.academy/keksobooking/data';
-  var URL_UPLOAD = 'https://js.dump.academy/keksobooking';
+  var URL_UPLOAD = 'https://js.dump.academy/kekdsobooking';
 
 
   var disableInputs = function () {
@@ -48,12 +48,14 @@
     for (var i = 0; i < pinsOnMap.length; i++) {
       pinsOnMap[i].remove();
     }
+    window.form.form.classList.add('ad-form--disabled');
   };
 
   var errorHandler = function (errorMessage, toDo) {
     var errorTemplate = document.querySelector('#error').content.querySelector('.error');
     var newError = errorTemplate.cloneNode(true);
     newError.querySelector('.error__message').textContent = errorMessage;
+    newError.classList.add('result-message');
 
     var tryingAgainButton = newError.querySelector('.error__button');
     tryingAgainButton.addEventListener('click', function (evt) {
@@ -68,37 +70,31 @@
 
     window.map.mainSection.insertAdjacentElement('afterbegin', newError);
 
-    window.addEventListener('click', function () {
-      newError.remove();
-      // вынести в функцию удаление сообщения об успехе, и затем удалить обработчики событий здесь же?
-    });
+    newError.addEventListener('click', onResultMessageClick);
+    window.addEventListener('keydown', onResultMessagePressEsc);
+  };
 
-    window.addEventListener('keydown', function (evt) {
-      if (evt.keyCode === ESC_KEYCODE) {
-        newError.remove();
-      }
-    });
+  var onResultMessageClick = function (messageEvt) {
+    messageEvt.target.removeEventListener('click', onResultMessageClick);
+    messageEvt.target.remove();
+  };
+
+  var onResultMessagePressEsc = function (messageEvt) {
+    if (messageEvt.keyCode === ESC_KEYCODE) {
+      window.removeEventListener('keydown', onResultMessagePressEsc);
+      document.querySelector('.result-message').remove();
+    }
   };
 
   var successHandler = function () {
     deactivatePage();
     var successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
     var newSuccessMessage = successMessageTemplate.cloneNode(true);
+    newSuccessMessage.classList.add('result-message');
     window.map.mainSection.insertAdjacentElement('afterbegin', newSuccessMessage);
 
-    window.addEventListener('click', function () {
-      newSuccessMessage.remove();
-      // window.map.activateMap();
-      // вынести в функцию удаление сообщения об успехе, и затем удалить обработчики событий здесь же?
-    });
-
-    window.addEventListener('keydown', function (evt) {
-      if (evt.keyCode === ESC_KEYCODE) {
-        newSuccessMessage.remove();
-        // window.map.activateMap();
-      }
-    });
-
+    newSuccessMessage.addEventListener('click', onResultMessageClick);
+    window.addEventListener('keydown', onResultMessagePressEsc);
   };
 
   window.utils = {
