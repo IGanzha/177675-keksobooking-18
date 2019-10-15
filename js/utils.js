@@ -108,7 +108,8 @@
     URL_LOAD: URL_LOAD,
     URL_UPLOAD: URL_UPLOAD,
     errorHandler: errorHandler,
-    successHandler: successHandler
+    successHandler: successHandler,
+    removeOpenedAdCard: removeOpenedAdCard
   };
 
 })();

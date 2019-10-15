@@ -3,7 +3,7 @@
 (function () {
 
   var ACCOMMODATION_TYPES = ['palace', 'flat', 'house', 'bungalo'];
-  var AccommodationTypesRus = {
+  var AccommodationTypesToRus = {
     'palace': 'Дворец',
     'flat': 'Квартира',
     'house': 'Дом',
@@ -85,7 +85,7 @@
   };
 
   window.data = {
-    AccommodationTypesRus: AccommodationTypesRus,
+    AccommodationTypesToRus: AccommodationTypesToRus,
     createAdvertsArray: createAdvertsArray,
     MAX_ROOMS_AVAILABLE: MAX_ROOMS_AVAILABLE
   };
