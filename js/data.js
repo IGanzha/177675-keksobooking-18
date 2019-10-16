@@ -3,14 +3,14 @@
 (function () {
 
   var ACCOMMODATION_TYPES = ['palace', 'flat', 'house', 'bungalo'];
-  var AccommodationTypesRus = {
+  var AccommodationTypesToRus = {
     'palace': 'Дворец',
     'flat': 'Квартира',
     'house': 'Дом',
     'bungalo': 'Бунгало'
   };
   var MIN_INDEX_TYPES = 0;
-  var FACILITIES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+  var AMENITY = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
   var CHECK_IN_TIMES = ['12:00', '13:00', '14:00'];
   var CHECK_OUT_TIMES = ['12:00', '13:00', '14:00'];
   var MIN_INDEX_TIMES = 0;
@@ -73,7 +73,7 @@
           'guests': getRandomNumber(MIN_GUESTS_AMOUNT, MAX_GUESTS_AMOUNT, true),
           'checkin': CHECK_IN_TIMES[getRandomNumber(MIN_INDEX_TIMES, CHECK_IN_TIMES.length, false)],
           'checkout': CHECK_OUT_TIMES[getRandomNumber(MIN_INDEX_TIMES, CHECK_OUT_TIMES.length, false)],
-          'features': getRandomArray(FACILITIES),
+          'features': getRandomArray(AMENITY),
           'description': descriptionsArray[getRandomNumber(MIN_INDEX_DESCRIPTION, descriptionsArray.length, false)],
           'photos': getRandomArray(PHOTOS_URLS_ARRAY),
         },
@@ -85,7 +85,7 @@
   };
 
   window.data = {
-    AccommodationTypesRus: AccommodationTypesRus,
+    AccommodationTypesToRus: AccommodationTypesToRus,
     createAdvertsArray: createAdvertsArray,
     MAX_ROOMS_AVAILABLE: MAX_ROOMS_AVAILABLE
   };

@@ -13,6 +13,7 @@
   var MAX_Y_COORD = 630 - PIN_ARROWHEAD_HEIGHT;
   var MIN_X_COORD = 0 - MAIN_PIN_WIDTH / 2;
   var MAX_X_COORD = window.utils.mapSection.getBoundingClientRect().width - MAIN_PIN_WIDTH / 2;
+  var PINS_LIMIT = 5;
 
   var mapPins = document.querySelector('.map__pins');
   var fragment = document.createDocumentFragment();
@@ -20,9 +21,19 @@
   var addressField = document.querySelector('#address');
   var mainSection = document.querySelector('main');
 
-  var renderAdvertsOnMap = function (adverts) {
+  var renderAdvertsOnMap = function (allData) {
 
-    for (var i = 0; i < adverts.length; i++) {
+    var unlimitedFilteredData = window.filter.getFullyFilteredData(allData);
+
+    var adverts = window.filter.limitData(unlimitedFilteredData, PINS_LIMIT);
+
+    var pinsToDelete = document.querySelectorAll('.map__pin--advert');
+
+    for (var i = 0; i < pinsToDelete.length; i++) {
+      pinsToDelete[i].parentNode.removeChild(pinsToDelete[i]);
+    }
+
+    for (i = 0; i < adverts.length; i++) {
       var pin = window.createPin.createPin(adverts[i]);
       pin.classList.add('map__pin--advert');
       fragment.appendChild(pin);
@@ -43,7 +54,7 @@
     if (document.querySelector('.map--faded')) {
       window.utils.mapSection.classList.remove('map--faded');
       window.form.form.classList.remove('ad-form--disabled');
-      window.load(renderAdvertsOnMap, window.utils.errorHandler);
+      window.load.load(renderAdvertsOnMap, window.utils.errorHandler);
 
       window.utils.enableInputs();
 

@@ -12,7 +12,7 @@
     newCard.querySelector('.popup__title').textContent = advert.offer.title;
     newCard.querySelector('.popup__text--address').textContent = advert.offer.adress;
     newCard.querySelector('.popup__text--price').textContent = advert.offer.price + '₽/ночь';
-    newCard.querySelector('.popup__type').textContent = window.data.AccommodationTypesRus[advert.offer.type];
+    newCard.querySelector('.popup__type').textContent = window.data.AccommodationTypesToRus[advert.offer.type];
     newCard.querySelector('.popup__text--capacity').textContent = advert.offer.rooms + ' комнат(-а/-ы) для ' + advert.offer.guests + ' гостей(-я)';
     newCard.querySelector('.popup__text--time').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout + '.';
     newCard.querySelector('.popup__features').textContent = advert.offer.features;
