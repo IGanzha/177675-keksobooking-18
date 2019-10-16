@@ -1,7 +1,7 @@
 'use strict';
 (function () {
 
-  var nativeData = [];
+  // var nativeData = [];
 
   var load = function (onSuccess, onError) {
 
@@ -15,7 +15,7 @@
 
       if (xhr.status === 200) {
         onSuccess(xhr.response);
-        nativeData = xhr.response;
+        window.nativeData = xhr.response;
         // console.log('данные загружены');
         // console.log(nativeData);
       } else {
@@ -28,7 +28,7 @@
 
   // console.log(nativeData);
   window.load = {
-    load: load,
-    nativeData: nativeData
+    load: load
+    // nativeData: nativeData
   };
 })();

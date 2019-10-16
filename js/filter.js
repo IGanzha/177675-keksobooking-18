@@ -133,7 +133,7 @@
   };
 
   typeFilterField.addEventListener('change', function () {
-    window.map.renderAdvertsOnMap(window.load.nativeData);
+    window.map.renderAdvertsOnMap(window.nativeData);
   });
 
   window.filter = {
