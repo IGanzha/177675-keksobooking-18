@@ -20,42 +20,20 @@
   var mainPin = document.querySelector('.map__pin--main');
   var addressField = document.querySelector('#address');
   var mainSection = document.querySelector('main');
-  var typeFilterField = document.querySelector('#housing-type');
-  var downloadedData = [];
-
-  typeFilterField.addEventListener('change', function () {
-    // renderAdvertsOnMap(downloadedData);
-    filterData(downloadedData);
-    // console.log(typeFilterField.value);
-  });
-
-  var limitData = function (someData, limit) {
-    var limitedData = someData.slice(0, limit);
-    return limitedData;
-  };
-
-  var filterData = function (data) {
-    if (typeFilterField.value === 'any') {
-      var filteredData = data;
-    } else {
-      filteredData = data.filter(function (dataElement) {
-        return dataElement.offer.type === typeFilterField.value;
-      });
-    }
-    // console.log(filteredData);
-    return filteredData;
-
-  };
 
   var renderAdvertsOnMap = function (allData) {
-    // console.log (allData[0]);
-    downloadedData = allData;
 
-    var dataForLimit = filterData(allData);
+    var unlimitedFilteredData = window.filter.getFullyFilteredData(allData);
 
-    var adverts = limitData(dataForLimit, PINS_LIMIT);
+    var adverts = window.filter.limitData(unlimitedFilteredData, PINS_LIMIT);
 
-    for (var i = 0; i < adverts.length; i++) {
+    var pinsToDelete = document.querySelectorAll('.map__pin--advert');
+
+    for (var i = 0; i < pinsToDelete.length; i++) {
+      pinsToDelete[i].parentNode.removeChild(pinsToDelete[i]);
+    }
+
+    for (i = 0; i < adverts.length; i++) {
       var pin = window.createPin.createPin(adverts[i]);
       pin.classList.add('map__pin--advert');
       fragment.appendChild(pin);
@@ -76,7 +54,7 @@
     if (document.querySelector('.map--faded')) {
       window.utils.mapSection.classList.remove('map--faded');
       window.form.form.classList.remove('ad-form--disabled');
-      window.load(renderAdvertsOnMap, window.utils.errorHandler);
+      window.load.load(renderAdvertsOnMap, window.utils.errorHandler);
 
       window.utils.enableInputs();
 
