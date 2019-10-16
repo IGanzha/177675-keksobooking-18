@@ -42,15 +42,15 @@
       var filteredData = data;
     } else if (priceFilterField.value === 'low') {
       filteredData = data.filter(function (dataElement) {
-        return dataElement.offer.price <= LOW_PRICE_TOP;
+        return dataElement.offer.price < LOW_PRICE_TOP;
       });
     } else if (priceFilterField.value === 'high') {
       filteredData = data.filter(function (dataElement) {
-        return dataElement.offer.price >= HIGH_PRICE_BOTTOM;
+        return dataElement.offer.price > HIGH_PRICE_BOTTOM;
       });
-    } else if (priceFilterField.value === 'medium') {
+    } else if (priceFilterField.value === 'middle') {
       filteredData = data.filter(function (dataElement) {
-        return (dataElement.offer.price < HIGH_PRICE_BOTTOM && dataElement.offer.price > LOW_PRICE_TOP);
+        return dataElement.offer.price <= HIGH_PRICE_BOTTOM && dataElement.offer.price >= LOW_PRICE_TOP;
       });
     }
     return filteredData;
