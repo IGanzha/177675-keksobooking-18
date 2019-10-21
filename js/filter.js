@@ -2,6 +2,9 @@
 
 (function () {
 
+  var LOW_PRICE_TOP = 10000;
+  var HIGH_PRICE_BOTTOM = 50000;
+
   var typeFilterField = document.querySelector('#housing-type');
   var priceFilterField = document.querySelector('#housing-price');
   var roomsFilterField = document.querySelector('#housing-rooms');
@@ -12,9 +15,6 @@
   var washerCheckbox = document.querySelector('#filter-washer');
   var elevatorCheckbox = document.querySelector('#filter-elevator');
   var conditionerCheckbox = document.querySelector('#filter-conditioner');
-
-  var LOW_PRICE_TOP = 10000;
-  var HIGH_PRICE_BOTTOM = 50000;
 
   var limitData = function (data, limit) {
     var limitedData = data.slice(0, limit);
@@ -95,7 +95,6 @@
   var getAdvertsWithAmenity = function (amenityElement, data) {
     var filteredAmenityData = [];
 
-    // if (amenityElement.hasAttribute('checked')) {
     if (amenityElement.checked) {
 
       for (var i = 0; i < data.length; i++) {
@@ -129,13 +128,13 @@
     return summaryData;
   };
 
-  typeFilterField.addEventListener('change', function () {
-    window.utils.removeOpenedAdCard();
-    window.map.renderAdvertsOnMap(window.nativeData);
-  });
-
   window.filter = {
     getFullyFilteredData: getFullyFilteredData,
-    limitData: limitData
+    limitData: limitData,
+    guestsFilterField: guestsFilterField,
+    typeFilterField: typeFilterField,
+    priceFilterField: priceFilterField,
+    roomsFilterField: roomsFilterField
+
   };
 })();

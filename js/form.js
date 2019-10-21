@@ -11,6 +11,7 @@
   var capacity = document.querySelector('#capacity');
   var form = document.querySelector('.ad-form');
   var descField = document.querySelector('#description');
+  var resetButton = document.querySelector('.ad-form__reset');
 
   var validateTitleInput = function (titleElement) {
     titleElement.setAttribute('minlength', 30);
@@ -86,8 +87,6 @@
 
   window.map.addressField.value = (window.map.START_MAIN_PIN_COORD_X + window.map.MAIN_PIN_WIDTH / 2) + ', ' + (window.map.START_MAIN_PIN_COORD_Y + window.map.MAIN_PIN_HEIGHT / 2);
 
-  // -------------ОГРАНИЧЕНИЕ НА ВВОД ПОЛЕЙ  -------
-
   var validateRoomsAndGuestsSelects = function (roomsSelect, guestsSelect) {
 
     var guestsAmountOptions = guestsSelect.children;
@@ -107,7 +106,6 @@
       }
     }
 
-    // --------- ОБРАТНАЯ БЛОКИРОВКА - ------
     var roomsAmountOptions = roomsSelect.children;
     for (i = 0; i < roomsAmountOptions.length; i++) {
       roomsAmountOptions[i].removeAttribute('disabled');
@@ -145,11 +143,21 @@
     window.upload(new FormData(form), window.utils.successHandler, window.utils.errorHandler);
   });
 
+  resetButton.addEventListener('click', function (evt) {
+    evt.preventDefault();
+    window.utils.deactivatePage();
+  });
+
   window.form = {
     titleField: titleField,
     priceField: priceField,
     descField: descField,
-    form: form
+    form: form,
+    timeInField: timeInField,
+    timeOutField: timeOutField,
+    roomNumber: roomNumber,
+    capacity: capacity,
+    typeField: typeField
   };
 
 })();

@@ -12,7 +12,8 @@
   var MIN_Y_COORD = 130 - PIN_ARROWHEAD_HEIGHT;
   var MAX_Y_COORD = 630 - PIN_ARROWHEAD_HEIGHT;
   var MIN_X_COORD = 0 - MAIN_PIN_WIDTH / 2;
-  var MAX_X_COORD = window.utils.mapSection.getBoundingClientRect().width - MAIN_PIN_WIDTH / 2;
+  var mapSection = document.querySelector('.map');
+  var MAX_X_COORD = mapSection.getBoundingClientRect().width - MAIN_PIN_WIDTH / 2;
   var PINS_LIMIT = 5;
 
   var mapPins = document.querySelector('.map__pins');
@@ -20,6 +21,7 @@
   var mainPin = document.querySelector('.map__pin--main');
   var addressField = document.querySelector('#address');
   var mainSection = document.querySelector('main');
+
 
   var renderAdvertsOnMap = function (allData) {
 
@@ -40,7 +42,13 @@
 
       var addListenerToAdvertPin = function (pinElement, advertElement) {
         pinElement.addEventListener('click', function () {
+          var currentPinsOnMap = document.querySelectorAll('.map__pin--advert');
+          for (i = 0; i < currentPinsOnMap.length; i++) {
+            currentPinsOnMap[i].classList.remove('map-pin--active');
+          }
+
           window.renderCard.renderCard(advertElement);
+          pinElement.classList.add('map-pin--active');
         });
       };
 
@@ -49,10 +57,15 @@
     mapPins.appendChild(fragment);
   };
 
+  var reloadPins = function () {
+    window.utils.removeOpenedAdCard();
+    renderAdvertsOnMap(window.nativeData);
+  };
+
   var activateMap = function () {
 
     if (document.querySelector('.map--faded')) {
-      window.utils.mapSection.classList.remove('map--faded');
+      mapSection.classList.remove('map--faded');
       window.form.form.classList.remove('ad-form--disabled');
       window.load.load(renderAdvertsOnMap, window.utils.errorHandler);
 
@@ -61,6 +74,14 @@
       addressField.value = (START_MAIN_PIN_COORD_X + MAIN_PIN_WIDTH / 2) + ', ' + (START_MAIN_PIN_COORD_Y + MAIN_PIN_HEIGHT + PIN_ARROWHEAD_HEIGHT);
 
       mainPin.removeEventListener('keydown', onPinPressEnter);
+    }
+
+    for (var i = 0; i < window.utils.filterSelects.length; i++) {
+      window.utils.filterSelects[i].addEventListener('change', window.debounce(reloadPins));
+    }
+
+    for (i = 0; i < window.utils.featuresCheckboxes.length; i++) {
+      window.utils.featuresCheckboxes[i].addEventListener('change', window.debounce(reloadPins));
     }
   };
 
@@ -140,6 +161,7 @@
 
   window.map = {
     addressField: addressField,
+    mapSection: mapSection,
     START_MAIN_PIN_COORD_X: START_MAIN_PIN_COORD_X,
     START_MAIN_PIN_COORD_Y: START_MAIN_PIN_COORD_Y,
     MAIN_PIN_HEIGHT: MAIN_PIN_HEIGHT,
@@ -155,7 +177,8 @@
     mapPins: mapPins,
     activateMap: activateMap,
     mainPin: mainPin,
-    renderAdvertsOnMap: renderAdvertsOnMap
+    renderAdvertsOnMap: renderAdvertsOnMap,
+    reloadPins: reloadPins
   };
 
 })();

@@ -4,6 +4,12 @@
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
   var photoTemplate = document.querySelector('#card').content.querySelector('.popup__photos').querySelector('img');
   var filterContainer = document.querySelector('.map__filters-container');
+  var accommodationTypesToRus = {
+    'palace': 'Дворец',
+    'flat': 'Квартира',
+    'house': 'Дом',
+    'bungalo': 'Бунгало'
+  };
 
   var renderCard = function (advert) {
     window.utils.removeOpenedAdCard();
@@ -12,7 +18,7 @@
     newCard.querySelector('.popup__title').textContent = advert.offer.title;
     newCard.querySelector('.popup__text--address').textContent = advert.offer.adress;
     newCard.querySelector('.popup__text--price').textContent = advert.offer.price + '₽/ночь';
-    newCard.querySelector('.popup__type').textContent = window.data.AccommodationTypesToRus[advert.offer.type];
+    newCard.querySelector('.popup__type').textContent = accommodationTypesToRus[advert.offer.type];
     newCard.querySelector('.popup__text--capacity').textContent = advert.offer.rooms + ' комнат(-а/-ы) для ' + advert.offer.guests + ' гостей(-я)';
     newCard.querySelector('.popup__text--time').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout + '.';
     newCard.querySelector('.popup__features').textContent = advert.offer.features;
@@ -26,7 +32,7 @@
     }
     newCard.querySelector('.popup__avatar').src = advert.author.avatar;
     newCard.classList.add('opened-card');
-    window.utils.mapSection.insertBefore(newCard, filterContainer);
+    window.map.mapSection.insertBefore(newCard, filterContainer);
     var popupButtonClose = newCard.querySelector('.popup__close');
 
     popupButtonClose.addEventListener('click', function () {
