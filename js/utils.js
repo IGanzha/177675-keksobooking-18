@@ -3,12 +3,14 @@
 (function () {
   var ENTER_KEYCODE = 13;
   var ESC_KEYCODE = 27;
-  var mapSection = document.querySelector('.map');
-  var formFieldsets = document.querySelectorAll('fieldset');
-  var mapFilterInputs = document.querySelector('.map__filters').querySelectorAll('select');
   var URL_LOAD = 'https://js.dump.academy/keksobooking/data';
-  var URL_UPLOAD = 'https://js.dump.academy/kekdsobooking';
-
+  var URL_UPLOAD = 'https://js.dump.academy/keksobooking';
+  var mapFilters = document.querySelector('.map__filters');
+  var mapFilterInputs = mapFilters.querySelectorAll('select');
+  var filterSelects = mapFilters.querySelectorAll('.map__filter');
+  var featuresCheckboxes = mapFilters.querySelectorAll('.map__checkbox');
+  var formFieldsets = document.querySelectorAll('fieldset');
+  var formFeaturesCheckboxes = document.querySelectorAll('.feature__checkbox');
 
   var disableInputs = function () {
     for (var i = 0; i < formFieldsets.length; i++) {
@@ -29,8 +31,8 @@
   };
 
   var removeOpenedAdCard = function () {
-    if (mapSection.querySelector('.opened-card')) {
-      mapSection.querySelector('.opened-card').remove();
+    if (window.map.mapSection.querySelector('.opened-card')) {
+      window.map.mapSection.querySelector('.opened-card').remove();
     }
   };
 
@@ -40,14 +42,42 @@
     window.map.mainPin.style.top = window.map.START_MAIN_PIN_COORD_Y + 'px';
     window.map.mainPin.style.left = window.map.START_MAIN_PIN_COORD_X + 'px';
     window.map.addressField.value = (window.map.START_MAIN_PIN_COORD_X + window.map.MAIN_PIN_WIDTH / 2) + ', ' + (window.map.START_MAIN_PIN_COORD_Y + window.map.MAIN_PIN_HEIGHT / 2);
-    window.utils.mapSection.classList.add('map--faded');
+    window.map.mapSection.classList.add('map--faded');
+
+
+    window.filter.typeFilterField.selectedIndex = 0;
+    window.filter.priceFilterField.selectedIndex = 0;
+    window.filter.roomsFilterField.selectedIndex = 0;
+    window.filter.guestsFilterField.selectedIndex = 0;
+
     window.form.titleField.value = '';
     window.form.priceField.value = '';
     window.form.descField.value = '';
+
+    for (var i = 0; i < formFeaturesCheckboxes.length; i++) {
+      formFeaturesCheckboxes[i].checked = false;
+    }
+
+    window.form.timeInField.selectedIndex = 0;
+    window.form.timeOutField.selectedIndex = 0;
+
+    window.form.roomNumber.selectedIndex = 0;
+    window.form.capacity.selectedIndex = 2;
+    window.form.typeField.selectedIndex = 1;
+
     var pinsOnMap = window.map.mapPins.querySelectorAll('.map__pin--advert');
-    for (var i = 0; i < pinsOnMap.length; i++) {
+    for (i = 0; i < pinsOnMap.length; i++) {
       pinsOnMap[i].remove();
     }
+
+    for (i = 0; i < filterSelects.length; i++) {
+      filterSelects[i].removeEventListener('change', window.map.reloadPins);
+    }
+
+    for (i = 0; i < featuresCheckboxes.length; i++) {
+      featuresCheckboxes[i].removeEventListener('change', window.map.reloadPins);
+    }
+
     window.form.form.classList.add('ad-form--disabled');
   };
 
@@ -100,7 +130,6 @@
   window.utils = {
     ENTER_KEYCODE: ENTER_KEYCODE,
     ESC_KEYCODE: ESC_KEYCODE,
-    mapSection: mapSection,
     enableInputs: enableInputs,
     disableInputs: disableInputs,
     formFieldsets: formFieldsets,
@@ -109,7 +138,10 @@
     URL_UPLOAD: URL_UPLOAD,
     errorHandler: errorHandler,
     successHandler: successHandler,
-    removeOpenedAdCard: removeOpenedAdCard
+    removeOpenedAdCard: removeOpenedAdCard,
+    deactivatePage: deactivatePage,
+    filterSelects: filterSelects,
+    featuresCheckboxes: featuresCheckboxes
   };
 
 })();

@@ -2,6 +2,9 @@
 
 (function () {
 
+  var LOW_PRICE_TOP = 10000;
+  var HIGH_PRICE_BOTTOM = 50000;
+
   var typeFilterField = document.querySelector('#housing-type');
   var priceFilterField = document.querySelector('#housing-price');
   var roomsFilterField = document.querySelector('#housing-rooms');
@@ -13,9 +16,6 @@
   var elevatorCheckbox = document.querySelector('#filter-elevator');
   var conditionerCheckbox = document.querySelector('#filter-conditioner');
 
-  var LOW_PRICE_TOP = 10000;
-  var HIGH_PRICE_BOTTOM = 50000;
-
   var limitData = function (data, limit) {
     var limitedData = data.slice(0, limit);
     // здесь ноль является магическим числом?
@@ -23,8 +23,7 @@
   };
 
   var getTypeFilteredData = function (data) {
-    // console.log('фильтрация по типу');
-    // console.log(data);
+
     if (typeFilterField.value === 'any') {
       var filteredData = data;
     } else {
@@ -36,8 +35,7 @@
   };
 
   var getPriceFilteredData = function (data) {
-    // console.log('фильтрация по цене');
-    // console.log(data);
+
     if (priceFilterField.value === 'any') {
       var filteredData = data;
     } else if (priceFilterField.value === 'low') {
@@ -57,34 +55,31 @@
   };
 
   var getRoomsFilteredData = function (data) {
-    // console.log('фильтрация по комнатам');
-    // console.log(data);
+
     if (roomsFilterField.value === 'any') {
       var filteredData = data;
     } else {
       filteredData = data.filter(function (dataElement) {
-        return dataElement.offer.rooms === roomsFilterField.value;
+        return dataElement.offer.rooms === +roomsFilterField.value;
       });
     }
     return filteredData;
   };
 
   var getGuestsFilteredData = function (data) {
-    // console.log('фильтрация по гостям');
-    // console.log(data);
+
     if (guestsFilterField.value === 'any') {
       var filteredData = data;
     } else {
       filteredData = data.filter(function (dataElement) {
-        return dataElement.offer.guests === guestsFilterField.value;
+        return dataElement.offer.guests === +guestsFilterField.value;
       });
     }
     return filteredData;
   };
 
   var getAmenityFilteredData = function (data) {
-    // console.log('фильтрация по удобствам');
-    // console.log(data);
+
     var wifiFilteredData = getAdvertsWithAmenity(wifiCheckbox, data);
     var dishwasherFilteredData = getAdvertsWithAmenity(dishwasherCheckbox, wifiFilteredData);
     var parkingFilteredData = getAdvertsWithAmenity(parkingCheckbox, dishwasherFilteredData);
@@ -101,11 +96,12 @@
     var filteredAmenityData = [];
 
     if (amenityElement.checked) {
+
       for (var i = 0; i < data.length; i++) {
         var hasAmenity = false;
 
-        for (var j = 0; j < data[j].offer.features.length; i++) {
-          if (data[j].offer.features === amenityElement.value) {
+        for (var j = 0; j < data[i].offer.features.length; j++) {
+          if (data[i].offer.features[j] === amenityElement.value) {
             hasAmenity = true;
           }
         }
@@ -132,12 +128,13 @@
     return summaryData;
   };
 
-  typeFilterField.addEventListener('change', function () {
-    window.map.renderAdvertsOnMap(window.nativeData);
-  });
-
   window.filter = {
     getFullyFilteredData: getFullyFilteredData,
-    limitData: limitData
+    limitData: limitData,
+    guestsFilterField: guestsFilterField,
+    typeFilterField: typeFilterField,
+    priceFilterField: priceFilterField,
+    roomsFilterField: roomsFilterField
+
   };
 })();
