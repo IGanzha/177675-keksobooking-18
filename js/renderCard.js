@@ -11,6 +11,27 @@
     'bungalo': 'Бунгало'
   };
 
+  var featuresToRus = {
+    'wifi': 'WiFi',
+    'washer': 'Стиральная машина',
+    'elevator': 'Лифт',
+    'dishwasher': 'Посудомоечная машина',
+    'parking': 'Паркинг',
+    'conditioner': 'Кондиционер'
+  };
+
+  var getFeaturesInRus = function (featuresArray) {
+    var featuresList = '';
+    for (var i = 0; i < featuresArray.length; i++) {
+      if (i < featuresArray.length - 1) {
+        featuresList = featuresList + featuresToRus[featuresArray[i]] + ', ';
+      } else {
+        featuresList = featuresList + featuresToRus[featuresArray[i]];
+      }
+    }
+    return featuresList;
+  };
+
   var renderCard = function (advert) {
     window.utils.removeOpenedAdCard();
 
@@ -21,14 +42,29 @@
     newCard.querySelector('.popup__type').textContent = accommodationTypesToRus[advert.offer.type];
     newCard.querySelector('.popup__text--capacity').textContent = advert.offer.rooms + ' комнат(-а/-ы) для ' + advert.offer.guests + ' гостей(-я)';
     newCard.querySelector('.popup__text--time').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout + '.';
-    newCard.querySelector('.popup__features').textContent = advert.offer.features;
-    newCard.querySelector('.popup__description').textContent = advert.offer.description;
-    newCard.querySelector('.popup__photos').innerHTML = '';
 
-    for (var j = 0; j < advert.offer.photos.length; j++) {
-      var newPhoto = photoTemplate.cloneNode(true);
-      newPhoto.src = advert.offer.photos[j];
-      newCard.querySelector('.popup__photos').appendChild(newPhoto);
+    if (advert.offer.features) {
+      newCard.querySelector('.popup__features').textContent = getFeaturesInRus(advert.offer.features);
+    } else {
+      newCard.querySelector('.popup__features').hidden = true;
+    }
+
+    if (advert.offer.description) {
+      newCard.querySelector('.popup__description').textContent = advert.offer.description;
+    } else {
+      newCard.querySelector('.popup__description').hidden = true;
+    }
+
+    if (advert.offer.photos) {
+      newCard.querySelector('.popup__photos').innerHTML = '';
+
+      for (var j = 0; j < advert.offer.photos.length; j++) {
+        var newPhoto = photoTemplate.cloneNode(true);
+        newPhoto.src = advert.offer.photos[j];
+        newCard.querySelector('.popup__photos').appendChild(newPhoto);
+      }
+    } else {
+      newCard.querySelector('.popup__photos').hidden = true;
     }
     newCard.querySelector('.popup__avatar').src = advert.author.avatar;
     newCard.classList.add('opened-card');

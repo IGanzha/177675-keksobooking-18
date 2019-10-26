@@ -100,11 +100,11 @@
         </fieldset>
         <fieldset class="ad-form__element ad-form__element--wide">
           <label class="ad-form__label" for="title">Заголовок объявления</label>
-          <input id="title" name="title" type="text" placeholder="Милая, уютная квартирка в центре Токио">
+          <input id="title" name="title" type="text" placeholder="Милая, уютная квартирка в центре Токио" required>
         </fieldset>
         <fieldset class="ad-form__element ad-form__element--wide">
           <label class="ad-form__label" for="address">Адрес</label>
-          <input id="address" name="address" type="text">
+          <input id="address" name="address" type="text" readonly>
         </fieldset>
         <fieldset class="ad-form__element">
           <label class="ad-form__label" for="type">Тип жилья</label>
@@ -117,7 +117,7 @@
         </fieldset>
         <fieldset class="ad-form__element">
           <label class="ad-form__label" for="price">Цена за ночь, руб.</label>
-          <input id="price" name="price" type="number" placeholder="1000">
+          <input id="price" name="price" type="number" min="1000" max ="1000000" placeholder="1000" required>
         </fieldset>
         <fieldset class="ad-form__element ad-form__element--time">
           <label class="ad-form__label" for="timein">Время заезда и выезда</label>
@@ -176,7 +176,9 @@
               <input type="file" id="images" name="images" class="ad-form__input visually-hidden">
               <label for="images" class="ad-form__drop-zone">Загрузите или&nbsp;перетащите сюда фото</label>
             </div>
-            <div class="ad-form__photo"></div>
+            <div class="ad-form__photo">
+              <img src="" alt="Фото жилья" width="100%" height="100%" hidden>
+            </div>
           </div>
         </fieldset>
         <fieldset class="ad-form__element ad-form__element--submit">
@@ -258,5 +260,6 @@
   <script type="text/javascript" src="js/load.js"></script>
   <script type="text/javascript" src="js/upload.js"></script>
   <script type="text/javascript" src="js/debounce.js"></script>
+  <script type="text/javascript" src="js/preview.js"></script>
 </body>
 </html>

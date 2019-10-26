@@ -62,7 +62,7 @@
     renderAdvertsOnMap(window.nativeData);
   };
 
-  var activateMap = function () {
+  var activatePage = function () {
 
     if (document.querySelector('.map--faded')) {
       mapSection.classList.remove('map--faded');
@@ -76,13 +76,31 @@
       mainPin.removeEventListener('keydown', onPinPressEnter);
     }
 
-    for (var i = 0; i < window.utils.filterSelects.length; i++) {
-      window.utils.filterSelects[i].addEventListener('change', window.debounce(reloadPins));
+    for (var i = 0; i < window.utils.mapFilterSelects.length; i++) {
+      window.utils.mapFilterSelects[i].addEventListener('change', window.debounce(reloadPins));
     }
 
-    for (i = 0; i < window.utils.featuresCheckboxes.length; i++) {
-      window.utils.featuresCheckboxes[i].addEventListener('change', window.debounce(reloadPins));
+    for (i = 0; i < window.utils.filterFeaturesCheckboxes.length; i++) {
+      window.utils.filterFeaturesCheckboxes[i].addEventListener('change', window.debounce(reloadPins));
+      window.utils.filterFeaturesCheckboxes[i].addEventListener('keydown', window.filter.onFilterAmenityCheckboxPressEnter);
     }
+
+    window.form.titleField.addEventListener('input', window.form.onTitleFieldInput);
+
+    window.form.typeField.addEventListener('change', window.form.onTypeFieldChange);
+
+    window.form.timeInField.addEventListener('change', window.form.onTimeInFieldChange);
+
+    window.form.timeOutField.addEventListener('change', window.form.onTimeOutFieldChange);
+
+    window.form.roomsAmountField.addEventListener('change', window.form.onRoomsAmountFieldChange);
+
+    window.form.guestsAmountField.addEventListener('change', window.form.onGuestsAmountFieldChange);
+
+    window.form.form.addEventListener('submit', window.form.onFormSubmit);
+
+    window.form.resetButton.addEventListener('click', window.form.onResetButtonClick);
+
   };
 
   var addListenerToMainPin = function (evt) {
@@ -147,21 +165,19 @@
 
   var onPinPressEnter = function (evt) {
     if (evt.keyCode === window.utils.ENTER_KEYCODE) {
-      activateMap();
+      activatePage();
     }
   };
 
   window.utils.disableInputs();
 
   mainPin.addEventListener('mousedown', function (evt) {
-    activateMap();
+    activatePage();
     addListenerToMainPin(evt);
   });
-  mainPin.addEventListener('keydown', activateMap);
+  mainPin.addEventListener('keydown', activatePage);
 
   window.map = {
-    addressField: addressField,
-    mapSection: mapSection,
     START_MAIN_PIN_COORD_X: START_MAIN_PIN_COORD_X,
     START_MAIN_PIN_COORD_Y: START_MAIN_PIN_COORD_Y,
     MAIN_PIN_HEIGHT: MAIN_PIN_HEIGHT,
@@ -173,9 +189,11 @@
     MAX_Y_COORD: MAX_Y_COORD,
     MIN_X_COORD: MIN_X_COORD,
     MAX_X_COORD: MAX_X_COORD,
+    addressField: addressField,
+    mapSection: mapSection,
     mainSection: mainSection,
     mapPins: mapPins,
-    activateMap: activateMap,
+    activatePage: activatePage,
     mainPin: mainPin,
     renderAdvertsOnMap: renderAdvertsOnMap,
     reloadPins: reloadPins
