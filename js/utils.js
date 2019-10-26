@@ -5,10 +5,9 @@
   var ESC_KEYCODE = 27;
   var URL_LOAD = 'https://js.dump.academy/keksobooking/data';
   var URL_UPLOAD = 'https://js.dump.academy/keksobooking';
-  var mapFilters = document.querySelector('.map__filters');
-  var mapFilterInputs = mapFilters.querySelectorAll('select');
-  var filterSelects = mapFilters.querySelectorAll('.map__filter');
-  var featuresCheckboxes = mapFilters.querySelectorAll('.map__checkbox');
+  var filterForm = document.querySelector('.map__filters');
+  var mapFilterSelects = filterForm.querySelectorAll('.map__filter');
+  var filterFeaturesCheckboxes = filterForm.querySelectorAll('.map__checkbox');
   var formFieldsets = document.querySelectorAll('fieldset');
   var formFeaturesCheckboxes = document.querySelectorAll('.feature__checkbox');
 
@@ -16,8 +15,8 @@
     for (var i = 0; i < formFieldsets.length; i++) {
       formFieldsets[i].setAttribute('disabled', 'disabled');
     }
-    for (i = 0; i < mapFilterInputs.length; i++) {
-      mapFilterInputs[i].setAttribute('disabled', 'disabled');
+    for (i = 0; i < mapFilterSelects.length; i++) {
+      mapFilterSelects[i].setAttribute('disabled', 'disabled');
     }
   };
 
@@ -25,8 +24,8 @@
     for (var i = 0; i < formFieldsets.length; i++) {
       formFieldsets[i].removeAttribute('disabled');
     }
-    for (i = 0; i < mapFilterInputs.length; i++) {
-      mapFilterInputs[i].removeAttribute('disabled');
+    for (i = 0; i < mapFilterSelects.length; i++) {
+      mapFilterSelects[i].removeAttribute('disabled');
     }
   };
 
@@ -61,8 +60,8 @@
     window.form.timeInField.selectedIndex = 0;
     window.form.timeOutField.selectedIndex = 0;
 
-    window.form.roomNumber.selectedIndex = 0;
-    window.form.capacity.selectedIndex = 2;
+    window.form.roomsAmountField.selectedIndex = 0;
+    window.form.guestsAmountField.selectedIndex = 2;
     window.form.typeField.selectedIndex = 1;
 
     var pinsOnMap = window.map.mapPins.querySelectorAll('.map__pin--advert');
@@ -70,15 +69,36 @@
       pinsOnMap[i].remove();
     }
 
-    for (i = 0; i < filterSelects.length; i++) {
-      filterSelects[i].removeEventListener('change', window.map.reloadPins);
+    for (i = 0; i < mapFilterSelects.length; i++) {
+      mapFilterSelects[i].removeEventListener('change', window.map.reloadPins);
     }
 
-    for (i = 0; i < featuresCheckboxes.length; i++) {
-      featuresCheckboxes[i].removeEventListener('change', window.map.reloadPins);
+    for (i = 0; i < filterFeaturesCheckboxes.length; i++) {
+      filterFeaturesCheckboxes[i].removeEventListener('change', window.map.reloadPins);
+      filterFeaturesCheckboxes[i].removeEventListener('keydown', window.filter.onFilterAmenityCheckboxPressEnter);
     }
+
+    window.preview.hidePreview(window.preview.avatarPreview, window.preview.AVATAR_SRC, 0);
+    window.preview.hidePreview(window.preview.photoPreview, '', 1);
 
     window.form.form.classList.add('ad-form--disabled');
+
+    window.form.titleField.removeEventListener('input', window.form.onTitleFieldInput);
+
+    window.form.typeField.removeEventListener('change', window.form.onTypeFieldChange);
+
+    window.form.timeInField.removeEventListener('change', window.form.onTimeInFieldChange);
+
+    window.form.timeOutField.removeEventListener('change', window.form.onTimeOutFieldChange);
+
+    window.form.roomsAmountField.removeEventListener('change', window.form.onRoomsAmountFieldChange);
+
+    window.form.guestsAmountField.removeEventListener('change', window.form.onGuestsAmountFieldChange);
+
+    window.form.form.removeEventListener('submit', window.form.onFormSubmit);
+
+    window.form.resetButton.removeEventListener('click', window.form.onResetButtonClick);
+
   };
 
   var errorHandler = function (errorMessage, toDo) {
@@ -133,15 +153,15 @@
     enableInputs: enableInputs,
     disableInputs: disableInputs,
     formFieldsets: formFieldsets,
-    mapFilterInputs: mapFilterInputs,
+    mapFilterSelects: mapFilterSelects,
     URL_LOAD: URL_LOAD,
     URL_UPLOAD: URL_UPLOAD,
     errorHandler: errorHandler,
     successHandler: successHandler,
     removeOpenedAdCard: removeOpenedAdCard,
     deactivatePage: deactivatePage,
-    filterSelects: filterSelects,
-    featuresCheckboxes: featuresCheckboxes
+    filterFeaturesCheckboxes: filterFeaturesCheckboxes,
+    formFeaturesCheckboxes: formFeaturesCheckboxes
   };
 
 })();

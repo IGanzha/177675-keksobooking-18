@@ -18,7 +18,6 @@
 
   var limitData = function (data, limit) {
     var limitedData = data.slice(0, limit);
-    // здесь ноль является магическим числом?
     return limitedData;
   };
 
@@ -103,9 +102,9 @@
         for (var j = 0; j < data[i].offer.features.length; j++) {
           if (data[i].offer.features[j] === amenityElement.value) {
             hasAmenity = true;
+            break;
           }
         }
-
         if (hasAmenity) {
           filteredAmenityData.push(data[i]);
         }
@@ -123,9 +122,24 @@
     var roomsFilteredData = getRoomsFilteredData(priceFilteredData);
     var guestsFilteredData = getGuestsFilteredData(roomsFilteredData);
     var amenityFilteredData = getAmenityFilteredData(guestsFilteredData);
-
-    var summaryData = amenityFilteredData;
+    var summaryData = [];
+    for (var i = 0; i < amenityFilteredData.length; i++) {
+      if (amenityFilteredData[i].offer) {
+        summaryData.push(amenityFilteredData[i]);
+      }
+    }
     return summaryData;
+  };
+
+  var onFilterAmenityCheckboxPressEnter = function (evt) {
+    if (evt.keyCode === window.utils.ENTER_KEYCODE) {
+      if (evt.target.checked) {
+        evt.target.checked = false;
+      } else {
+        evt.target.checked = true;
+      }
+      window.map.reloadPins();
+    }
   };
 
   window.filter = {
@@ -134,7 +148,7 @@
     guestsFilterField: guestsFilterField,
     typeFilterField: typeFilterField,
     priceFilterField: priceFilterField,
-    roomsFilterField: roomsFilterField
-
+    roomsFilterField: roomsFilterField,
+    onFilterAmenityCheckboxPressEnter: onFilterAmenityCheckboxPressEnter
   };
 })();
