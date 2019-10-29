@@ -40,7 +40,7 @@
     removeOpenedAdCard();
     window.map.mainPin.style.top = window.map.START_MAIN_PIN_COORD_Y + 'px';
     window.map.mainPin.style.left = window.map.START_MAIN_PIN_COORD_X + 'px';
-    window.map.addressField.value = (window.map.START_MAIN_PIN_COORD_X + window.map.MAIN_PIN_WIDTH / 2) + ', ' + (window.map.START_MAIN_PIN_COORD_Y + window.map.MAIN_PIN_HEIGHT / 2);
+    window.map.addressField.value = Math.round(window.map.START_MAIN_PIN_COORD_X + window.map.MAIN_PIN_WIDTH / 2) + ', ' + Math.round(window.map.START_MAIN_PIN_COORD_Y + window.map.MAIN_PIN_HEIGHT / 2);
     window.map.mapSection.classList.add('map--faded');
 
 

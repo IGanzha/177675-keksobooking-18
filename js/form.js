@@ -76,6 +76,12 @@
   };
 
   var limitGuestsSelect = function (roomsSelect, guestsSelect) {
+    roomsSelect.setCustomValidity('');
+    if ((roomsSelect.value < guestsSelect.value) || ((roomsSelect.value > MAX_ROOMS_AVAILABLE) && (guestsSelect.value > 0))) {
+      guestsSelect.setCustomValidity('Количество гостей не соответствует выбранному количеству комнат');
+    } else {
+      guestsSelect.setCustomValidity('');
+    }
 
     var guestsAmountOptions = guestsSelect.children;
     for (var i = 0; i < guestsAmountOptions.length; i++) {
@@ -95,6 +101,7 @@
     }
 
     if ((+roomsSelect.value === 100) && (+guestsSelect.value === 0)) {
+      guestsSelect.setCustomValidity('');
       for (i = 0; i < guestsAmountOptions.length; i++) {
         guestsAmountOptions[i].removeAttribute('disabled');
       }
@@ -102,6 +109,14 @@
   };
 
   var limitRoomsSelect = function (roomsSelect, guestsSelect) {
+    guestsSelect.setCustomValidity('');
+
+    if ((roomsSelect.value < guestsSelect.value) || ((guestsSelect.value < 1) && (roomsSelect.value < MAX_ROOMS_AVAILABLE))) {
+      roomsSelect.setCustomValidity('Количество комнат не соответствует выбранному количеству гостей');
+    } else {
+      roomsSelect.setCustomValidity('');
+    }
+
     var roomsAmountOptions = roomsSelect.children;
     for (var i = 0; i < roomsAmountOptions.length; i++) {
       roomsAmountOptions[i].removeAttribute('disabled');
@@ -120,6 +135,7 @@
     }
 
     if ((+roomsSelect.value === 100) && (+guestsSelect.value === 0)) {
+      roomsSelect.setCustomValidity('');
       for (i = 0; i < roomsAmountOptions.length; i++) {
         roomsAmountOptions[i].removeAttribute('disabled');
       }
@@ -137,6 +153,7 @@
   var onFormSubmit = function (evt) {
     evt.preventDefault();
     window.upload(new FormData(form), window.utils.successHandler, window.utils.errorHandler);
+    limitGuestsSelect(roomsAmountField, guestsAmountField);
   };
 
   var onResetButtonClick = function (evt) {
@@ -144,7 +161,7 @@
     window.utils.deactivatePage();
   };
 
-  window.map.addressField.value = (window.map.START_MAIN_PIN_COORD_X + window.map.MAIN_PIN_WIDTH / 2) + ', ' + (window.map.START_MAIN_PIN_COORD_Y + window.map.MAIN_PIN_HEIGHT / 2);
+  window.map.addressField.value = Math.round(window.map.START_MAIN_PIN_COORD_X + window.map.MAIN_PIN_WIDTH / 2) + ', ' + Math.round(window.map.START_MAIN_PIN_COORD_Y + window.map.MAIN_PIN_HEIGHT / 2);
 
   window.form = {
     form: form,

@@ -4,151 +4,83 @@
 
   var LOW_PRICE_TOP = 10000;
   var HIGH_PRICE_BOTTOM = 50000;
-
+  var filterForm = document.querySelector('.map__filters');
   var typeFilterField = document.querySelector('#housing-type');
   var priceFilterField = document.querySelector('#housing-price');
   var roomsFilterField = document.querySelector('#housing-rooms');
   var guestsFilterField = document.querySelector('#housing-guests');
-  var wifiCheckbox = document.querySelector('#filter-wifi');
-  var dishwasherCheckbox = document.querySelector('#filter-dishwasher');
-  var parkingCheckbox = document.querySelector('#filter-parking');
-  var washerCheckbox = document.querySelector('#filter-washer');
-  var elevatorCheckbox = document.querySelector('#filter-elevator');
-  var conditionerCheckbox = document.querySelector('#filter-conditioner');
 
   var limitData = function (data, limit) {
     var limitedData = data.slice(0, limit);
     return limitedData;
   };
 
-  var getTypeFilteredData = function (data) {
-
-    if (typeFilterField.value === 'any') {
-      var filteredData = data;
-    } else {
-      filteredData = data.filter(function (dataElement) {
-        return dataElement.offer.type === typeFilterField.value;
-      });
-    }
+  var filterData = function (data) {
+    var filteredData = data.filter(function (dataElement) {
+      return getTypeCondition(typeFilterField, dataElement) && getPriceCondition(priceFilterField, dataElement, LOW_PRICE_TOP, HIGH_PRICE_BOTTOM) && getRoomsCondition(roomsFilterField, dataElement) && getGuestsCondition(guestsFilterField, dataElement) && getFeaturesCondition(dataElement);
+    });
     return filteredData;
   };
 
-  var getPriceFilteredData = function (data) {
+  var getTypeCondition = function (typeField, element) {
+    if (typeField.value === 'any') {
+      return true;
+    } else {
+      return element.offer.type === typeField.value;
+    }
+  };
 
-    if (priceFilterField.value === 'any') {
-      var filteredData = data;
-    } else if (priceFilterField.value === 'low') {
-      filteredData = data.filter(function (dataElement) {
-        return dataElement.offer.price < LOW_PRICE_TOP;
-      });
-    } else if (priceFilterField.value === 'high') {
-      filteredData = data.filter(function (dataElement) {
-        return dataElement.offer.price > HIGH_PRICE_BOTTOM;
-      });
+  var getPriceCondition = function (priceField, element, topOfLowPrice, bottomOfHighPrice) {
+    if (priceField.value === 'any') {
+      var result = true;
+    } else if (priceField.value === 'low') {
+      result = element.offer.price < topOfLowPrice;
+    } else if (priceField.value === 'high') {
+      result = element.offer.price > bottomOfHighPrice;
     } else if (priceFilterField.value === 'middle') {
-      filteredData = data.filter(function (dataElement) {
-        return dataElement.offer.price <= HIGH_PRICE_BOTTOM && dataElement.offer.price >= LOW_PRICE_TOP;
-      });
+      result = ((element.offer.price <= bottomOfHighPrice) && (element.offer.price >= topOfLowPrice));
     }
-    return filteredData;
+    return result;
   };
 
-  var getRoomsFilteredData = function (data) {
-
-    if (roomsFilterField.value === 'any') {
-      var filteredData = data;
+  var getRoomsCondition = function (roomsField, element) {
+    if (roomsField.value === 'any') {
+      return true;
     } else {
-      filteredData = data.filter(function (dataElement) {
-        return dataElement.offer.rooms === +roomsFilterField.value;
-      });
+      return element.offer.rooms === +roomsField.value;
     }
-    return filteredData;
   };
 
-  var getGuestsFilteredData = function (data) {
-
-    if (guestsFilterField.value === 'any') {
-      var filteredData = data;
+  var getGuestsCondition = function (guestsField, element) {
+    if (guestsField.value === 'any') {
+      return true;
     } else {
-      filteredData = data.filter(function (dataElement) {
-        return dataElement.offer.guests === +guestsFilterField.value;
+      return element.offer.guests === +guestsField.value;
+    }
+  };
+
+  var getFeaturesCondition = function (element) {
+    var checkedCheckboxes = document.querySelectorAll('.map__checkbox:checked');
+
+    if (checkedCheckboxes.length > 0) {
+      var checkedFeaturesArray = Array.from(checkedCheckboxes).map(function (checkedElement) {
+        return checkedElement.value;
       });
-    }
-    return filteredData;
-  };
-
-  var getAmenityFilteredData = function (data) {
-
-    var wifiFilteredData = getAdvertsWithAmenity(wifiCheckbox, data);
-    var dishwasherFilteredData = getAdvertsWithAmenity(dishwasherCheckbox, wifiFilteredData);
-    var parkingFilteredData = getAdvertsWithAmenity(parkingCheckbox, dishwasherFilteredData);
-    var washerFilteredData = getAdvertsWithAmenity(washerCheckbox, parkingFilteredData);
-    var elevatorFilteredData = getAdvertsWithAmenity(elevatorCheckbox, washerFilteredData);
-    var conditionerFilteredData = getAdvertsWithAmenity(conditionerCheckbox, elevatorFilteredData);
-
-    var fullyFilteredData = conditionerFilteredData;
-
-    return fullyFilteredData;
-  };
-
-  var getAdvertsWithAmenity = function (amenityElement, data) {
-    var filteredAmenityData = [];
-
-    if (amenityElement.checked) {
-
-      for (var i = 0; i < data.length; i++) {
-        var hasAmenity = false;
-
-        for (var j = 0; j < data[i].offer.features.length; j++) {
-          if (data[i].offer.features[j] === amenityElement.value) {
-            hasAmenity = true;
-            break;
-          }
-        }
-        if (hasAmenity) {
-          filteredAmenityData.push(data[i]);
-        }
-      }
-
+      return checkedFeaturesArray.every(function (featuresElement) {
+        return element.offer.features.includes(featuresElement);
+      });
     } else {
-      filteredAmenityData = data;
-    }
-    return filteredAmenityData;
-  };
-
-  var getFullyFilteredData = function (data) {
-    var typeFilteredData = getTypeFilteredData(data);
-    var priceFilteredData = getPriceFilteredData(typeFilteredData);
-    var roomsFilteredData = getRoomsFilteredData(priceFilteredData);
-    var guestsFilteredData = getGuestsFilteredData(roomsFilteredData);
-    var amenityFilteredData = getAmenityFilteredData(guestsFilteredData);
-    var summaryData = [];
-    for (var i = 0; i < amenityFilteredData.length; i++) {
-      if (amenityFilteredData[i].offer) {
-        summaryData.push(amenityFilteredData[i]);
-      }
-    }
-    return summaryData;
-  };
-
-  var onFilterAmenityCheckboxPressEnter = function (evt) {
-    if (evt.keyCode === window.utils.ENTER_KEYCODE) {
-      if (evt.target.checked) {
-        evt.target.checked = false;
-      } else {
-        evt.target.checked = true;
-      }
-      window.map.reloadPins();
+      return true;
     }
   };
 
   window.filter = {
-    getFullyFilteredData: getFullyFilteredData,
     limitData: limitData,
     guestsFilterField: guestsFilterField,
     typeFilterField: typeFilterField,
     priceFilterField: priceFilterField,
     roomsFilterField: roomsFilterField,
-    onFilterAmenityCheckboxPressEnter: onFilterAmenityCheckboxPressEnter
+    filterForm: filterForm,
+    filterData: filterData
   };
 })();
