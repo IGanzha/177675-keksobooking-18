@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-
+  var URL_UPLOAD = 'https://js.dump.academy/keksobooking';
   window.upload = function (data, onSuccess, onError) {
     var xhr = new XMLHttpRequest();
 
@@ -12,11 +12,11 @@
       if (xhr.status === 200) {
         onSuccess(xhr.response);
       } else {
-        onError('Ошибка: ' + xhr.status, 'upload');
+        onError('Ошибка: ' + xhr.status, 'upload', window.utils.errorMessageTemplate);
       }
     });
 
-    xhr.open('POST', window.utils.URL_UPLOAD);
+    xhr.open('POST', URL_UPLOAD);
 
     xhr.send(data);
   };

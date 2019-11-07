@@ -7,10 +7,10 @@
   var MAIN_PIN_HEIGHT = 65;
   var MAIN_PIN_WIDTH = 65;
   var PIN_ARROWHEAD_HEIGHT = 22;
-  var PIN_WIDTH = 50;
-  var PIN_HEIGHT = 70;
-  var MIN_Y_COORD = 130 - PIN_ARROWHEAD_HEIGHT;
-  var MAX_Y_COORD = 630 - PIN_ARROWHEAD_HEIGHT;
+  var MIN_Y_POSITION = 130;
+  var MAX_Y_POSITION = 630;
+  var MIN_Y_COORD = MIN_Y_POSITION - PIN_ARROWHEAD_HEIGHT;
+  var MAX_Y_COORD = MAX_Y_POSITION - PIN_ARROWHEAD_HEIGHT;
   var MIN_X_COORD = 0 - MAIN_PIN_WIDTH / 2;
   var PINS_LIMIT = 5;
 
@@ -19,24 +19,17 @@
   var mapPins = document.querySelector('.map__pins');
   var fragment = document.createDocumentFragment();
   var mainPin = document.querySelector('.map__pin--main');
-  var addressField = document.querySelector('#address');
   var mainSection = document.querySelector('main');
 
-
   var renderAdvertsOnMap = function (allData) {
+    window.pin.delete(mapPins.querySelectorAll('.map__pin--advert'));
 
     var unlimitedFilteredData = window.filter.filterData(allData);
 
     var adverts = window.filter.limitData(unlimitedFilteredData, PINS_LIMIT);
 
-    var pinsToDelete = document.querySelectorAll('.map__pin--advert');
-
-    for (var i = 0; i < pinsToDelete.length; i++) {
-      pinsToDelete[i].parentNode.removeChild(pinsToDelete[i]);
-    }
-
-    for (i = 0; i < adverts.length; i++) {
-      var pin = window.createPin.createPin(adverts[i]);
+    for (var i = 0; i < adverts.length; i++) {
+      var pin = window.pin.create(adverts[i]);
       pin.classList.add('map__pin--advert');
       fragment.appendChild(pin);
 
@@ -47,7 +40,7 @@
             currentPinsOnMap[i].classList.remove('map-pin--active');
           }
 
-          window.renderCard.renderCard(advertElement);
+          window.card.renderCard(advertElement);
           pinElement.classList.add('map-pin--active');
         });
       };
@@ -57,47 +50,41 @@
     mapPins.appendChild(fragment);
   };
 
-  var reloadPins = function () {
-    window.utils.removeOpenedAdCard();
-    renderAdvertsOnMap(window.nativeData);
-  };
-
-  var activatePage = function () {
-
-    if (document.querySelector('.map--faded')) {
+  var activateMap = function () {
+    if (mapSection.classList.contains('map--faded')) {
       mapSection.classList.remove('map--faded');
-      window.form.form.classList.remove('ad-form--disabled');
-      window.load.load(renderAdvertsOnMap, window.utils.errorHandler);
+      // window.load(renderAdvertsOnMap, window.utils.errorHandler);
+      window.request(0, renderAdvertsOnMap, window.utils.errorHandler, window.utils.URL_LOAD, 'GET');
 
-      window.utils.enableInputs();
-
-      addressField.value = Math.round(START_MAIN_PIN_COORD_X + MAIN_PIN_WIDTH / 2) + ', ' + (START_MAIN_PIN_COORD_Y + MAIN_PIN_HEIGHT + PIN_ARROWHEAD_HEIGHT);
+      window.utils.filterSelects.forEach(function (select) {
+        window.utils.enableElement(select);
+      });
 
       mainPin.removeEventListener('keydown', onPinPressEnter);
     }
 
-    window.filter.filterForm.addEventListener('change', window.debounce(reloadPins));
+    window.utils.filterForm.addEventListener('change', window.debounce(window.pin.reload));
+  };
 
-    for (var i = 0; i < window.utils.filterFeaturesCheckboxes.length; i++) {
-      window.utils.filterFeaturesCheckboxes[i].addEventListener('keydown', window.filter.onFilterAmenityCheckboxPressEnter);
-    }
 
-    window.form.titleField.addEventListener('input', window.form.onTitleFieldInput);
+  var deactivateMap = function () {
+    window.utils.filterSelects.forEach(function (select) {
+      window.utils.disableElement(select);
+    });
 
-    window.form.typeField.addEventListener('change', window.form.onTypeFieldChange);
+    window.card.removeOpenedAdCard();
+    window.utils.filterForm.reset();
 
-    window.form.timeInField.addEventListener('change', window.form.onTimeInFieldChange);
+    window.pin.delete(mapPins.querySelectorAll('.map__pin--advert'));
 
-    window.form.timeOutField.addEventListener('change', window.form.onTimeOutFieldChange);
+    mapSection.classList.add('map--faded');
 
-    window.form.roomsAmountField.addEventListener('change', window.form.onRoomsAmountFieldChange);
+    mainPin.style.top = START_MAIN_PIN_COORD_Y + 'px';
+    mainPin.style.left = START_MAIN_PIN_COORD_X + 'px';
 
-    window.form.guestsAmountField.addEventListener('change', window.form.onGuestsAmountFieldChange);
+    mainPin.addEventListener('keydown', onPinPressEnter);
 
-    window.form.form.addEventListener('submit', window.form.onFormSubmit);
-
-    window.form.resetButton.addEventListener('click', window.form.onResetButtonClick);
-
+    window.utils.filterForm.removeEventListener('change', window.debounce(window.pin.reload));
   };
 
   var addListenerToMainPin = function (evt) {
@@ -146,7 +133,7 @@
       mainPin.style.top = limitCoords(mainPin, MIN_Y_COORD, MAX_Y_COORD, 'y') + 'px';
       mainPin.style.left = limitCoords(mainPin, MIN_X_COORD, maxXCoord, 'x') + 'px';
 
-      addressField.value = Math.round(limitCoords(mainPin, MIN_X_COORD, maxXCoord, 'x') + MAIN_PIN_WIDTH / 2) + ', ' + (limitCoords(mainPin, MIN_Y_COORD, MAX_Y_COORD, 'y') + PIN_ARROWHEAD_HEIGHT);
+      window.adForm.addressField.value = Math.round(limitCoords(mainPin, MIN_X_COORD, maxXCoord, 'x') + MAIN_PIN_WIDTH / 2) + ', ' + (limitCoords(mainPin, MIN_Y_COORD, MAX_Y_COORD, 'y') + PIN_ARROWHEAD_HEIGHT);
     };
 
     var onMouseUp = function (upEvt) {
@@ -162,17 +149,19 @@
 
   var onPinPressEnter = function (evt) {
     if (evt.keyCode === window.utils.ENTER_KEYCODE) {
-      activatePage();
+      window.utils.activatePage();
     }
   };
 
-  window.utils.disableInputs();
+  window.utils.filterSelects.forEach(function (select) {
+    window.utils.disableElement(select);
+  });
 
   mainPin.addEventListener('mousedown', function (evt) {
-    activatePage();
+    window.utils.activatePage();
     addListenerToMainPin(evt);
   });
-  mainPin.addEventListener('keydown', activatePage);
+  mainPin.addEventListener('keydown', window.utils.activatePage);
 
   window.map = {
     START_MAIN_PIN_COORD_X: START_MAIN_PIN_COORD_X,
@@ -180,20 +169,10 @@
     MAIN_PIN_HEIGHT: MAIN_PIN_HEIGHT,
     MAIN_PIN_WIDTH: MAIN_PIN_WIDTH,
     PIN_ARROWHEAD_HEIGHT: PIN_ARROWHEAD_HEIGHT,
-    PIN_WIDTH: PIN_WIDTH,
-    PIN_HEIGHT: PIN_HEIGHT,
-    MIN_Y_COORD: MIN_Y_COORD,
-    MAX_Y_COORD: MAX_Y_COORD,
-    MIN_X_COORD: MIN_X_COORD,
-    maxXCoord: maxXCoord,
-    addressField: addressField,
-    mapSection: mapSection,
+    cityScheme: mapSection,
     mainSection: mainSection,
-    mapPins: mapPins,
-    activatePage: activatePage,
-    mainPin: mainPin,
-    renderAdvertsOnMap: renderAdvertsOnMap,
-    reloadPins: reloadPins
+    renderAdverts: renderAdvertsOnMap,
+    activate: activateMap,
+    deactivate: deactivateMap
   };
-
 })();

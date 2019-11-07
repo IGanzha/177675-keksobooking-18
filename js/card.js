@@ -22,18 +22,15 @@
 
   var getFeaturesInRus = function (featuresArray) {
     var featuresList = '';
-    for (var i = 0; i < featuresArray.length; i++) {
-      if (i < featuresArray.length - 1) {
-        featuresList = featuresList + featuresToRus[featuresArray[i]] + ', ';
-      } else {
-        featuresList = featuresList + featuresToRus[featuresArray[i]];
-      }
-    }
+
+    featuresArray.forEach(function (feature) {
+      featuresList = featuresList + featuresToRus[feature] + ', ';
+    });
     return featuresList;
   };
 
   var renderCard = function (advert) {
-    window.utils.removeOpenedAdCard();
+    removeOpenedAdCard();
 
     var newCard = cardTemplate.cloneNode(true);
     newCard.querySelector('.popup__title').textContent = advert.offer.title;
@@ -68,7 +65,7 @@
     }
     newCard.querySelector('.popup__avatar').src = advert.author.avatar;
     newCard.classList.add('opened-card');
-    window.map.mapSection.insertBefore(newCard, filterContainer);
+    window.map.cityScheme.insertBefore(newCard, filterContainer);
     var popupButtonClose = newCard.querySelector('.popup__close');
 
     popupButtonClose.addEventListener('click', function () {
@@ -82,9 +79,16 @@
     });
   };
 
-  window.renderCard = {
+  var removeOpenedAdCard = function () {
+    if (window.map.cityScheme.querySelector('.opened-card')) {
+      window.map.cityScheme.querySelector('.opened-card').remove();
+    }
+  };
+
+  window.card = {
     renderCard: renderCard,
-    filterContainer: filterContainer
+    filterContainer: filterContainer,
+    removeOpenedAdCard: removeOpenedAdCard
   };
 
 })();

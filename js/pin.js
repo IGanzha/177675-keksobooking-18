@@ -11,7 +11,20 @@
     return newPin;
   };
 
-  window.createPin = {
-    createPin: createPin
+  var reloadPins = function () {
+    window.card.removeOpenedAdCard();
+    window.map.renderAdverts(window.originalData);
+  };
+
+  var deletePins = function (pins) {
+    pins.forEach(function (pin) {
+      pin.remove();
+    });
+  };
+
+  window.pin = {
+    create: createPin,
+    reload: reloadPins,
+    delete: deletePins
   };
 })();

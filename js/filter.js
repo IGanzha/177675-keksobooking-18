@@ -4,11 +4,11 @@
 
   var LOW_PRICE_TOP = 10000;
   var HIGH_PRICE_BOTTOM = 50000;
-  var filterForm = document.querySelector('.map__filters');
   var typeFilterField = document.querySelector('#housing-type');
   var priceFilterField = document.querySelector('#housing-price');
   var roomsFilterField = document.querySelector('#housing-rooms');
   var guestsFilterField = document.querySelector('#housing-guests');
+
 
   var limitData = function (data, limit) {
     var limitedData = data.slice(0, limit);
@@ -80,7 +80,6 @@
     typeFilterField: typeFilterField,
     priceFilterField: priceFilterField,
     roomsFilterField: roomsFilterField,
-    filterForm: filterForm,
-    filterData: filterData
+    filterData: filterData,
   };
 })();
