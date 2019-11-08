@@ -77,8 +77,8 @@
 
       resetButton.removeEventListener('click', onResetButtonClick);
 
-      window.preview.hidePreview(window.preview.avatarPreview, window.preview.AVATAR_SRC, 0);
-      window.preview.hidePreview(window.preview.photoPreview, '', 1);
+      window.preview.hide(window.preview.avatar, window.preview.AVATAR_SRC, 0);
+      window.preview.hide(window.preview.photo, '', 1);
     }
   };
 
@@ -115,7 +115,7 @@
   var limitGuestsSelect = function (roomsSelect, guestsSelect) {
     roomsSelect.setCustomValidity('');
     if ((roomsSelect.value < guestsSelect.value) || ((roomsSelect.value > MAX_ROOMS_AVAILABLE) && (guestsSelect.value > 0)) || ((roomsSelect.value < MAX_ROOMS_AVAILABLE) && (guestsSelect.value < 1))) {
-      guestsSelect.setCustomValidity('Количество гостей не может быть больше кол-ва комнат. Вариант брони "100 комнат" предназначен не для гостей.');
+      guestsSelect.setCustomValidity('Количество гостей не может быть больше кол-ва комнат. Вариант "не для гостей" доступен только при брони 100 комнат. Скорректируйте, пожалуйста, кол-во мест.');
     } else {
       guestsSelect.setCustomValidity('');
     }
@@ -149,7 +149,7 @@
     guestsSelect.setCustomValidity('');
 
     if ((roomsSelect.value < guestsSelect.value) || ((guestsSelect.value < 1) && (roomsSelect.value < MAX_ROOMS_AVAILABLE)) || ((guestsSelect.value > 0) && (roomsSelect.value > MAX_ROOMS_AVAILABLE))) {
-      roomsSelect.setCustomValidity('Количество гостей не может быть больше кол-ва комнат. Вариант "не для гостей" доступен только при брони 100 комнат.');
+      roomsSelect.setCustomValidity('Количество гостей не может быть больше кол-ва комнат. 100 комнат можно забронировать только не для гостей. Скорректируйте, пожалуйста, кол-во комнат');
     } else {
       roomsSelect.setCustomValidity('');
     }
@@ -205,7 +205,6 @@
 
   var onFormSubmit = function (evt) {
     evt.preventDefault();
-    // window.upload(new FormData(form), window.utils.successHandler, window.utils.errorHandler);
     window.request(new FormData(form), window.utils.successHandler, window.utils.errorHandler, window.utils.URL_UPLOAD, 'POST');
     limitGuestsSelect(roomsAmountField, guestsAmountField);
   };
@@ -219,26 +218,10 @@
 
   disableForm();
 
-  window.adForm = {
-    form: form,
-    titleField: titleField,
-    typeField: typeField,
-    priceField: priceField,
-    timeInField: timeInField,
-    timeOutField: timeOutField,
-    roomsAmountField: roomsAmountField,
-    guestsAmountField: guestsAmountField,
-    onTitleFieldInput: onTitleFieldInput,
-    onTypeFieldChange: onTypeFieldChange,
-    onTimeInFieldChange: onTimeInFieldChange,
-    onTimeOutFieldChange: onTimeOutFieldChange,
-    onRoomsAmountFieldChange: onRoomsAmountFieldChange,
-    onGuestsAmountFieldChange: onGuestsAmountFieldChange,
-    onFormSubmit: onFormSubmit,
-    onResetButtonClick: onResetButtonClick,
-    resetButton: resetButton,
-    enableForm: enableForm,
-    disableForm: disableForm,
+  window.form = {
+    newAdvert: form,
+    enable: enableForm,
+    disable: disableForm,
     addressField: addressField
   };
 

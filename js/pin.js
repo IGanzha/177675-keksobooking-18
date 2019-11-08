@@ -12,7 +12,7 @@
   };
 
   var reloadPins = function () {
-    window.card.removeOpenedAdCard();
+    window.card.removeOpened();
     window.map.renderAdverts(window.originalData);
   };
 

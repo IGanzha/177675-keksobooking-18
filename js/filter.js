@@ -76,10 +76,6 @@
 
   window.filter = {
     limitData: limitData,
-    guestsFilterField: guestsFilterField,
-    typeFilterField: typeFilterField,
-    priceFilterField: priceFilterField,
-    roomsFilterField: roomsFilterField,
     filterData: filterData,
   };
 })();

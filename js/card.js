@@ -86,9 +86,8 @@
   };
 
   window.card = {
-    renderCard: renderCard,
-    filterContainer: filterContainer,
-    removeOpenedAdCard: removeOpenedAdCard
+    render: renderCard,
+    removeOpened: removeOpenedAdCard
   };
 
 })();

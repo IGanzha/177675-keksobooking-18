@@ -46,10 +46,10 @@
   showPreview(photoFileChooser, photoPreview);
 
   window.preview = {
-    hidePreview: hidePreview,
-    avatarPreview: avatarPreview,
+    hide: hidePreview,
+    avatar: avatarPreview,
     AVATAR_SRC: AVATAR_SRC,
-    photoPreview: photoPreview
+    photo: photoPreview
   };
 
 })();

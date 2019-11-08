@@ -3,14 +3,9 @@
 (function () {
   var ENTER_KEYCODE = 13;
   var ESC_KEYCODE = 27;
-  var URL_UPLOAD = 'https://js.dump.academy/keksobooвking';
+  var URL_UPLOAD = 'https://js.dump.academy/keksobooking';
   var URL_LOAD = 'https://js.dump.academy/keksobooking/data';
-  var SUCCESS_CODE = 200;
 
-
-  var filterForm = document.querySelector('.map__filters');
-  var formFieldsets = document.querySelectorAll('fieldset');
-  var filterSelects = document.querySelectorAll('.map__filter');
   var successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
   var errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
 
@@ -23,12 +18,12 @@
   };
 
   var activatePage = function () {
-    window.adForm.enableForm();
+    window.form.enable();
     window.map.activate();
   };
 
   var deactivatePage = function () {
-    window.adForm.disableForm();
+    window.form.disable();
     window.map.deactivate();
   };
 
@@ -45,11 +40,13 @@
     tryingAgainButton.addEventListener('click', function (evt) {
       evt.preventDefault();
       newError.removeEventListener('click', onResultMessageClick);
+      newError.removeEventListener('click', onResultMessageClick);
+      window.removeEventListener('keydown', onResultMessagePressEsc);
       newError.remove();
       if (toDo === 'load') {
         window.request(0, window.map.renderAdverts, errorHandler, URL_LOAD, 'GET');
       } else if (toDo === 'upload') {
-        window.request(new FormData(window.adForm.form), successHandler, errorHandler, URL_UPLOAD, 'POST');
+        window.request(new FormData(window.form.newAdvert), successHandler, errorHandler, URL_UPLOAD, 'POST');
       }
     });
 
@@ -86,20 +83,15 @@
   window.utils = {
     ENTER_KEYCODE: ENTER_KEYCODE,
     ESC_KEYCODE: ESC_KEYCODE,
-    formFieldsets: formFieldsets,
     errorHandler: errorHandler,
     successHandler: successHandler,
-    deactivatePage: deactivatePage,
-    filterSelects: filterSelects,
-    disableElement: disableElement,
     activatePage: activatePage,
+    deactivatePage: deactivatePage,
     enableElement: enableElement,
-    filterForm: filterForm,
-    successMessageTemplate: successMessageTemplate,
+    disableElement: disableElement,
     errorMessageTemplate: errorMessageTemplate,
-    URL_UPLOAD: URL_UPLOAD,
     URL_LOAD: URL_LOAD,
-    SUCCESS_CODE: SUCCESS_CODE
+    URL_UPLOAD: URL_UPLOAD
   };
 
 })();

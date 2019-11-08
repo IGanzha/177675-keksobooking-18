@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-
+  var SUCCESS_CODE = 200;
   window.request = function (data, onSuccess, onError, URL, method) {
 
     var xhr = new XMLHttpRequest();
@@ -11,7 +11,7 @@
 
     xhr.addEventListener('load', function () {
 
-      if (xhr.status === +window.utils.SUCCESS_CODE) {
+      if (xhr.status === +SUCCESS_CODE) {
         onSuccess(xhr.response);
 
         if (method === 'GET') {
