@@ -50,38 +50,25 @@
   };
 
   var disableForm = function () {
+    formFieldsets.forEach(function (fieldset) {
+      fieldset.setAttribute('disabled', 'disabled');
+    });
 
     if (!form.classList.contains('ad-form--disabled')) {
-
-      formFieldsets.forEach(function (fieldset) {
-        fieldset.setAttribute('disabled', 'disabled');
-      });
-
       form.reset();
-
       form.classList.add('ad-form--disabled');
-
       titleField.removeEventListener('input', onTitleFieldInput);
-
       typeField.removeEventListener('change', onTypeFieldChange);
-
       timeInField.removeEventListener('change', onTimeInFieldChange);
-
       timeOutField.removeEventListener('change', onTimeOutFieldChange);
-
       roomsAmountField.removeEventListener('change', onRoomsAmountFieldChange);
-
       guestsAmountField.removeEventListener('change', onGuestsAmountFieldChange);
-
       form.removeEventListener('submit', onFormSubmit);
-
       resetButton.removeEventListener('click', onResetButtonClick);
-
       window.preview.hide(window.preview.avatar, window.preview.AVATAR_SRC, 0);
       window.preview.hide(window.preview.photo, '', 1);
     }
   };
-
 
   var validateTitleInput = function (titleElement, minLength, maxLength) {
     titleElement.setAttribute('minlength', minLength);
@@ -120,29 +107,26 @@
       guestsSelect.setCustomValidity('');
     }
 
+    [].forEach.call(roomsSelect.children, function (selectChild) {
+      selectChild.disabled = false;
+    });
+
     var guestsAmountOptions = guestsSelect.children;
-    for (var i = 0; i < guestsAmountOptions.length; i++) {
-      guestsAmountOptions[i].removeAttribute('disabled');
 
-      if (guestsAmountOptions[i].value > roomsSelect.value) {
-        guestsAmountOptions[i].setAttribute('disabled', 'disabled');
+    [].forEach.call(guestsAmountOptions, function (item) {
+      item.disabled = false;
+      if (item.value > roomsSelect.value) {
+        item.disabled = true;
       }
 
-      if ((roomsSelect.value > MAX_ROOMS_AVAILABLE) && (guestsAmountOptions[i].value > 0)) {
-        guestsAmountOptions[i].setAttribute('disabled', 'disabled');
+      if ((roomsSelect.value > MAX_ROOMS_AVAILABLE) && (item.value > 0)) {
+        item.disabled = true;
       }
 
-      if ((roomsSelect.value < MAX_ROOMS_AVAILABLE) && (guestsAmountOptions[i].value < 1)) {
-        guestsAmountOptions[i].setAttribute('disabled', 'disabled');
+      if ((roomsSelect.value < MAX_ROOMS_AVAILABLE) && (item.value < 1)) {
+        item.disabled = true;
       }
-    }
-
-    if ((+roomsSelect.value > MAX_ROOMS_AVAILABLE) && (+guestsSelect.value === 0)) {
-      guestsSelect.setCustomValidity('');
-      for (i = 0; i < guestsAmountOptions.length; i++) {
-        guestsAmountOptions[i].removeAttribute('disabled');
-      }
-    }
+    });
   };
 
   var limitRoomsSelect = function (roomsSelect, guestsSelect) {
@@ -154,29 +138,27 @@
       roomsSelect.setCustomValidity('');
     }
 
+    [].forEach.call(guestsSelect.children, function (selectChild) {
+      selectChild.disabled = false;
+    });
+
     var roomsAmountOptions = roomsSelect.children;
-    for (var i = 0; i < roomsAmountOptions.length; i++) {
-      roomsAmountOptions[i].removeAttribute('disabled');
 
-      if (roomsAmountOptions[i].value < guestsSelect.value) {
-        roomsAmountOptions[i].setAttribute('disabled', 'disabled');
+    [].forEach.call(roomsAmountOptions, function (item) {
+      item.disabled = false;
+
+      if (item.value < guestsSelect.value) {
+        item.disabled = true;
       }
 
-      if ((guestsSelect.value < 1) && (roomsAmountOptions[i].value < MAX_ROOMS_AVAILABLE)) {
-        roomsAmountOptions[i].setAttribute('disabled', 'disabled');
+      if ((guestsSelect.value < 1) && (item.value < MAX_ROOMS_AVAILABLE)) {
+        item.disabled = true;
       }
 
-      if ((+guestsSelect.value === 1) && (roomsAmountOptions[i].value > MAX_ROOMS_AVAILABLE)) {
-        roomsAmountOptions[i].setAttribute('disabled', 'disabled');
+      if ((+guestsSelect.value === 1) && (item.value > MAX_ROOMS_AVAILABLE)) {
+        item.disabled = true;
       }
-    }
-
-    if ((+roomsSelect.value > MAX_ROOMS_AVAILABLE) && (+guestsSelect.value === 0)) {
-      roomsSelect.setCustomValidity('');
-      for (i = 0; i < roomsAmountOptions.length; i++) {
-        roomsAmountOptions[i].removeAttribute('disabled');
-      }
-    }
+    });
   };
 
   var onTitleFieldInput = function () {

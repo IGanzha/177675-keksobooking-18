@@ -55,11 +55,11 @@
     if (advert.offer.photos) {
       newCard.querySelector('.popup__photos').innerHTML = '';
 
-      for (var j = 0; j < advert.offer.photos.length; j++) {
+      advert.offer.photos.forEach(function (photoSrc) {
         var newPhoto = photoTemplate.cloneNode(true);
-        newPhoto.src = advert.offer.photos[j];
+        newPhoto.src = photoSrc;
         newCard.querySelector('.popup__photos').appendChild(newPhoto);
-      }
+      });
     } else {
       newCard.querySelector('.popup__photos').hidden = true;
     }
